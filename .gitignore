@@ -1,0 +1,10 @@
+.env
+
+SysLib/bin/Debug/*
+SysLib/obj/*
+
+LogLib/bin/Debug/*
+LogLib/obj/*
+
+AppLib/bin/Debug/*
+AppLib/obj/*
