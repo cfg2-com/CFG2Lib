@@ -4,6 +4,18 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyName>CFG2.AppLib</AssemblyName>
+    <RepositoryUrl>https://github.com/cfg2-com/CFG2Lib</RepositoryUrl>
+    <Version>$(TMP_VERSION)</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\"/>
+    <PackageReference Include="CFG2.LogLib" Version="1.0.0" />
+    <PackageReference Include="CFG2.SysLib" Version="1.0.0" />
+  </ItemGroup>
 
 </Project>
