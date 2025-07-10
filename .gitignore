@@ -1,11 +1,5 @@
 .env
 r*Lib.bat
 
-SysLib/bin/Debug/*
-SysLib/obj/*
-
-LogLib/bin/Debug/*
-LogLib/obj/*
-
-AppLib/bin/Debug/*
-AppLib/obj/*
+*/bin/Debug/*
+*/obj/*
