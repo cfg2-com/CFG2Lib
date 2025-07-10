@@ -55,15 +55,30 @@ public sealed class Logger {
         }
     }
 
-    public string GetFilename() {
+    /// <summary>
+    /// Returns the filename of the log file
+    /// </summary>
+    /// <returns>Just the file name (no path info)</returns>
+    public string GetFilename()
+    {
         return logFilename;
     }
 
-    public string GetDir() {
+    /// <summary>
+    /// Returns the directory where the log file is stored
+    /// </summary>
+    /// <returns>Log file directory</returns>
+    public string GetDir()
+    {
         return logDir;
     }
 
-    public string GetFile() {
+    /// <summary>
+    /// Returns the full path to the log file
+    /// </summary>
+    /// <returns>Full path to log file</returns>
+    public string GetFile()
+    {
         return logFile;
     }
     

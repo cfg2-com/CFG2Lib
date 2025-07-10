@@ -4,7 +4,7 @@ using System.Diagnostics;
 using CFG2.Utils.SysLib;
 using CFG2.Utils.LogLib;
 
-public class CFG2Config
+public class AppLib
 {
     private static Logger logger;
     private readonly string configRootDir;
@@ -12,7 +12,7 @@ public class CFG2Config
     private readonly string baseDir;
 
 
-    public CFG2Config(string? appName = null, bool configInSyncDir = true, string baseDir = "CFG2")
+    public AppLib(string? appName = null, bool configInSyncDir = true, string? baseDir = null)
     {
         // Make sure we have an AppName
         if (string.IsNullOrEmpty(appName))
@@ -29,6 +29,7 @@ public class CFG2Config
         }
         else
         {
+            Logger.Trace("Using provided baseDir: " + baseDir);
             this.baseDir = baseDir;
         }
 
@@ -66,10 +67,12 @@ public class CFG2Config
     public string AppDir => GetAppDir();
     public string AppDataDir => GetAppDataDir();
     public string AppLogDir => GetAppLogDir();
+    public string AppSoftDeleteDir => GetAppSoftDeleteDir();
     public string AppBackupDir => GetAppBackupDir();
     public string SyncDir => GetSyncDir();
     public string InboxDir => GetInboxDir();
     public string BackupDir => GetBackupDir();
+    public string LogFile => logger.GetFile();
 
     private string GetAppName()
     {
@@ -158,6 +161,7 @@ public class CFG2Config
         }
         else
         {
+            //Logger.Trace("Using SYNC_DRIVE_HOME environment variable");
             syncHome = SysLib.GetEnvVar("SYNC_DRIVE_HOME");
         }
 
@@ -187,6 +191,26 @@ public class CFG2Config
             Directory.CreateDirectory(dir);
         }
         return dir;
+    }
+
+    public void Trace(string msg)
+    {
+        Logger.Trace(msg);
+    }
+
+    public void Log(string msg)
+    {
+        logger.Log(msg);
+    }
+
+    public void Warn(string msg)
+    {
+        logger.Warn(msg);
+    }
+
+    public void Error(string msg)
+    {
+        logger.Error(msg);
     }
 
     public bool SoftDeleteFile(string fullpath)
@@ -235,7 +259,7 @@ public class CFG2Config
             logger.Warn("File does not exist to Delete: " + fullpath);
             success = true; // If the source file doesn't exist, we consider it a success
         }
-        
+
         return success;
     }
 

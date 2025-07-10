@@ -6,12 +6,24 @@ public class TestApp
 {
     static void Main(string[] args)
     {
-        // This is a test application to demonstrate the use of AppLib
-        Console.WriteLine("Welcome to the Test Application using AppLib!");
-
         // Initialize AppLib
-        AppLib app = new AppLib("TestApp");
+        AppLib app = new();
 
-        Console.WriteLine("Test Application completed successfully.");
+        app.Log("Logging a message via the default logger provided by AppLib.");
+
+        app.Trace(app.AppName);
+        app.Trace(app.AppDir);
+        app.Trace(app.AppLogDir);
+        app.Trace(app.AppDataDir);
+        app.Trace(app.AppBackupDir);
+        app.Trace(app.AppSoftDeleteDir);
+        app.Trace(app.SyncDir);
+        app.Trace(app.BackupDir);
+        app.Trace(app.InboxDir);
+
+        app.CleanupSoftDeleteDirectory(4);
+        app.SoftDeleteFile(app.LogFile);
+
+        app.Trace("Goodbye");
     }
 }

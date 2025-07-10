@@ -16,11 +16,7 @@ public class SysLib
 
     public static bool EnvVarExists(string var)
     {
-        bool ret = false;
-        if (GetEnvVar(var) != null) {
-            ret = true;
-        }
-        return ret;
+        return Environment.GetEnvironmentVariables().Contains(var);
     }
 
     public static string GetEnvVar(string var)
