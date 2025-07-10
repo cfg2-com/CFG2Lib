@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AppLib\AppLib.csproj" />
+    <ProjectReference Include="..\HttpLib\HttpLib.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -17,7 +17,8 @@ public class TestApp
 {
     static void Main(string[] args)
     {
-        
+        HttpRequest req = new("https://google.com");
+        Console.WriteLine(HttpLib.Get(req).Content);
     }
 }
 ```

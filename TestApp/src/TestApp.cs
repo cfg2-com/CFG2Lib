@@ -1,6 +1,7 @@
 ﻿namespace CFG2.Test;
 
 using CFG2.Utils.AppLib;
+using CFG2.Utils.HttpLib;
 
 public class TestApp
 {
@@ -23,6 +24,9 @@ public class TestApp
 
         app.CleanupSoftDeleteDirectory(4);
         app.SoftDeleteFile(app.LogFile);
+
+        HttpRequest req = new("https://google.com");
+        app.Trace(HttpLib.Get(req).Content);
 
         app.Trace("Goodbye");
     }
