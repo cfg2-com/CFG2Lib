@@ -1,0 +1,1 @@
+dotnet build LogLib/LogLib.csproj

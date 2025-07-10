@@ -1,4 +1,5 @@
 .env
+r*Lib.bat
 
 SysLib/bin/Debug/*
 SysLib/obj/*
