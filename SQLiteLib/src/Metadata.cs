@@ -1,3 +1,5 @@
+using CFG2.Utils.LogLib;
+
 namespace CFG2.Utils.SQLiteLib;
 
 public class Metadata
@@ -36,11 +38,11 @@ public class Metadata
     }
 
     public void Print() {
-        Console.WriteLine("file: "+this._file);
+        Logger.Trace("file: "+this._file);
         foreach (KeyValuePair<string, List<FieldDef>> entry in tablesAndFields) {
-            Console.WriteLine(entry.Key);
+            Logger.Trace(entry.Key);
             foreach (FieldDef fieldDef in entry.Value) {
-                Console.WriteLine("  - "+fieldDef.Field+" "+fieldDef.Type);
+                Logger.Trace("  - "+fieldDef.Field+" "+fieldDef.Type);
             }
         }
     }

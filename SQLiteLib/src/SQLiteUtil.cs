@@ -1,5 +1,6 @@
 ﻿namespace CFG2.Utils.SQLiteLib;
 
+using CFG2.Utils.LogLib;
 using Microsoft.Data.Sqlite;
 
 public class SQLiteUtil
@@ -7,8 +8,9 @@ public class SQLiteUtil
     // ref: https://www.sqlite.org/datatype3.html
 
     private Metadata metadata;
-    
-    public SQLiteUtil(string file) {
+
+    public SQLiteUtil(string file)
+    {
         metadata = new Metadata(file);
     }
 
@@ -104,7 +106,7 @@ public class SQLiteUtil
                 }
             }
         } else {
-            Console.WriteLine("The field "+fieldDef.Field+" aleady exists on the table "+fieldDef.Table);
+            Logger.Trace("The field "+fieldDef.Field+" aleady exists on the table "+fieldDef.Table);
         }
     }
 
@@ -122,7 +124,7 @@ public class SQLiteUtil
                 whereFieldsAndVals += field+" "+entry.WhereCondition+" "+bindField+" AND ";
             }
             whereFieldsAndVals = whereFieldsAndVals.Trim().Substring(0, whereFieldsAndVals.Length-4);
-            //Console.WriteLine(whereFieldsAndVals);
+            //Logger.Trace(whereFieldsAndVals);
         }
 
         using (var connection = new SqliteConnection("Data Source="+metadata.File)) 
@@ -130,7 +132,7 @@ public class SQLiteUtil
             connection.Open();
             using (SqliteCommand command = connection.CreateCommand()) {
                 command.CommandText = "SELECT * FROM "+table+" "+whereFieldsAndVals;
-                Console.WriteLine(command.CommandText);
+                Logger.Trace(command.CommandText);
                 foreach (FieldVal entry in binds) {
                     string field = entry.Field;
                     string bindField = "@"+field;
@@ -139,7 +141,7 @@ public class SQLiteUtil
                         bindField = field;
                     }
                     
-                    Console.WriteLine("  "+bindField+" = "+value);
+                    Logger.Trace("  "+bindField+" = "+value);
                     command.Parameters.AddWithValue(bindField, value);
                 }
                 using (SqliteDataReader reader = command.ExecuteReader()) {
@@ -163,19 +165,19 @@ public class SQLiteUtil
         }
         fields = fields.Trim().Substring(0, fields.Length-2);
         binds = binds.Trim().Substring(0, binds.Length-2);
-        //Console.WriteLine(fields);
-        //Console.WriteLine(binds);
+        //Logger.Trace(fields);
+        //Logger.Trace(binds);
         using (var connection = new SqliteConnection("Data Source="+metadata.File)) 
         {
             connection.Open();
             using (SqliteCommand command = connection.CreateCommand()) {
                 command.CommandText = "INSERT INTO "+table+" ("+fields+") VALUES ("+binds+")";
-                Console.WriteLine(command.CommandText);
+                Logger.Trace(command.CommandText);
                 foreach (FieldVal entry in record.FieldVals) {
                     string field = entry.Field;
                     string bindField = "@"+field;
                     object value = entry.Value;
-                    Console.WriteLine(bindField+"="+value);
+                    Logger.Trace(bindField+"="+value);
                     command.Parameters.AddWithValue(bindField, value);
                 }
                 command.ExecuteNonQuery();
@@ -207,7 +209,7 @@ public class SQLiteUtil
             }
         }
         fieldsAndVals = fieldsAndVals.Trim().Substring(0, fieldsAndVals.Length-2);
-        //Console.WriteLine(fieldsAndVals);
+        //Logger.Trace(fieldsAndVals);
 
         string whereFieldsAndVals = "";
         if (whereClauses != null) {
@@ -219,7 +221,7 @@ public class SQLiteUtil
                 whereFieldsAndVals += field+" "+entry.WhereCondition+" "+bindField+" AND ";
             }
             whereFieldsAndVals = whereFieldsAndVals.Trim().Substring(0, whereFieldsAndVals.Length-4);
-            //Console.WriteLine(whereFieldsAndVals);
+            //Logger.Trace(whereFieldsAndVals);
         }
 
         using (var connection = new SqliteConnection("Data Source="+metadata.File)) 
@@ -227,7 +229,7 @@ public class SQLiteUtil
             connection.Open();
             using (SqliteCommand command = connection.CreateCommand()) {
                 command.CommandText = "UPDATE "+table+" SET "+fieldsAndVals+" "+whereFieldsAndVals;
-                Console.WriteLine(command.CommandText);
+                Logger.Trace(command.CommandText);
                 foreach (FieldVal entry in binds) {
                     string field = entry.Field;
                     string bindField = "@"+field;
@@ -239,7 +241,7 @@ public class SQLiteUtil
                     //} else {
                         //type = metadata.GetFieldDef(table, field).Type;
                     }
-                    Console.WriteLine("  "+bindField+" = "+value);
+                    Logger.Trace("  "+bindField+" = "+value);
                     command.Parameters.AddWithValue(bindField, value);
                 }
                 command.ExecuteNonQuery();
@@ -269,7 +271,7 @@ public class SQLiteUtil
             }
         }
 
-        Console.WriteLine("Returning "+records.Count+" records");
+        Logger.Trace("Returning "+records.Count+" records");
         return records;
     }
 
@@ -298,7 +300,7 @@ public class SQLiteUtil
             connection.Open();
             using (SqliteCommand command = connection.CreateCommand()) {
                 command.CommandText = "DELETE FROM "+table+" "+whereFieldsAndVals;
-                Console.WriteLine(command.CommandText);
+                Logger.Trace(command.CommandText);
                 foreach (FieldVal entry in binds) {
                     string field = entry.Field;
                     string bindField = "@"+field;
@@ -310,7 +312,7 @@ public class SQLiteUtil
                     } else {
                         type = metadata.GetFieldDef(table, field).Type;
                     }
-                    Console.WriteLine("  "+bindField+" = "+value);
+                    Logger.Trace("  "+bindField+" = "+value);
                     command.Parameters.AddWithValue(bindField, value);
                 }
                 command.ExecuteNonQuery();
