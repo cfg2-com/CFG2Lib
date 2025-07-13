@@ -3,6 +3,7 @@
 using System.Diagnostics;
 using CFG2.Utils.SysLib;
 using CFG2.Utils.LogLib;
+using CFG2.Utils.SQLiteLib;
 
 public class AppLib
 {
@@ -10,6 +11,7 @@ public class AppLib
     private readonly string configRootDir;
     private readonly string appName;
     private readonly string baseDir;
+    private SQLiteUtil mdp;
 
 
     public AppLib(string? appName = null, bool configInSyncDir = true, string? baseDir = null)
@@ -112,7 +114,7 @@ public class AppLib
     /// <summary>
     /// This is always in the sync dir
     /// </summary>
-    /// <returns>[syncDir]/Backup/CFG2/[appName]</returns>
+    /// <returns>[syncDir]/Backup/[baseDir]/[appName]</returns>
     private string GetAppBackupDir()
     {
         string dir = Path.Combine(GetBackupDir(), this.baseDir);
@@ -183,9 +185,19 @@ public class AppLib
         return dir;
     }
 
-    private string GetBackupDir()
+    private string GetBackupRoot()
     {
         string dir = Path.Combine(GetSyncDir(), "Backup");
+        if (!Directory.Exists(dir)) {
+            Logger.Trace("Creating BackupRoot: " + dir);
+            Directory.CreateDirectory(dir);
+        }
+        return dir;
+    }
+
+    private string GetBackupDir()
+    {
+        string dir = Path.Combine(GetBackupRoot(), this.baseDir);
         if (!Directory.Exists(dir)) {
             Logger.Trace("Creating BackupDir: " + dir);
             Directory.CreateDirectory(dir);
@@ -211,6 +223,17 @@ public class AppLib
     public void Error(string msg)
     {
         logger.Error(msg);
+    }
+
+    public SQLiteUtil GetMDP()
+    {
+        if (this.mdp == null)
+        {
+            string mdpFile = Path.Combine(this.SyncDir, "MDP.db");
+            this.mdp = new SQLiteUtil(mdpFile);
+        }
+
+        return this.mdp;
     }
 
     public bool SoftDeleteFile(string fullpath)

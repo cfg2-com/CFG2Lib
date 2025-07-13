@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SysLib\SysLib.csproj" />
     <ProjectReference Include="..\LogLib\LogLib.csproj" />
+    <ProjectReference Include="..\SQLiteLib\SQLiteLib.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

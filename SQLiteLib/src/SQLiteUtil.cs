@@ -13,21 +13,29 @@ public class SQLiteUtil
     {
         metadata = new Metadata(file);
     }
+    
+    public string File {
+        get { return metadata.File; }
+    }
 
     /// <summary>
     /// Registers a field for type safety and conversion
     /// </summary>
     /// <param name="fieldDef">Field Definition (includes table name)</param>
-    public void RegisterField(FieldDef fieldDef) {
-        if (!TableExists(fieldDef.Table)) {
-            CreateTable(fieldDef.Table, fieldDef.Field+" "+fieldDef.Type.ToString());
-        } else if (!FieldExists(fieldDef.Table, fieldDef.Field)) {
+    public void RegisterField(FieldDef fieldDef)
+    {
+        if (!TableExists(fieldDef.Table))
+        {
+            CreateTable(fieldDef.Table, fieldDef.Field + " " + fieldDef.Type.ToString());
+        }
+        else if (!FieldExists(fieldDef.Table, fieldDef.Field))
+        {
             AddField(fieldDef);
         }
 
         metadata.RegisterField(fieldDef);
 
-        metadata.Print();
+        //metadata.Print();
     }
 
     public DataType GetFieldDataType(string table, string field) {
@@ -106,7 +114,7 @@ public class SQLiteUtil
                 }
             }
         } else {
-            Logger.Trace("The field "+fieldDef.Field+" aleady exists on the table "+fieldDef.Table);
+            //Logger.Trace("The field "+fieldDef.Field+" aleady exists on the table "+fieldDef.Table);
         }
     }
 
@@ -132,7 +140,7 @@ public class SQLiteUtil
             connection.Open();
             using (SqliteCommand command = connection.CreateCommand()) {
                 command.CommandText = "SELECT * FROM "+table+" "+whereFieldsAndVals;
-                Logger.Trace(command.CommandText);
+                //Logger.Trace(command.CommandText);
                 foreach (FieldVal entry in binds) {
                     string field = entry.Field;
                     string bindField = "@"+field;
@@ -141,7 +149,7 @@ public class SQLiteUtil
                         bindField = field;
                     }
                     
-                    Logger.Trace("  "+bindField+" = "+value);
+                    //Logger.Trace("  "+bindField+" = "+value);
                     command.Parameters.AddWithValue(bindField, value);
                 }
                 using (SqliteDataReader reader = command.ExecuteReader()) {
@@ -172,12 +180,12 @@ public class SQLiteUtil
             connection.Open();
             using (SqliteCommand command = connection.CreateCommand()) {
                 command.CommandText = "INSERT INTO "+table+" ("+fields+") VALUES ("+binds+")";
-                Logger.Trace(command.CommandText);
+                //Logger.Trace(command.CommandText);
                 foreach (FieldVal entry in record.FieldVals) {
                     string field = entry.Field;
                     string bindField = "@"+field;
                     object value = entry.Value;
-                    Logger.Trace(bindField+"="+value);
+                    //Logger.Trace(bindField+"="+value);
                     command.Parameters.AddWithValue(bindField, value);
                 }
                 command.ExecuteNonQuery();
@@ -229,7 +237,7 @@ public class SQLiteUtil
             connection.Open();
             using (SqliteCommand command = connection.CreateCommand()) {
                 command.CommandText = "UPDATE "+table+" SET "+fieldsAndVals+" "+whereFieldsAndVals;
-                Logger.Trace(command.CommandText);
+                //Logger.Trace(command.CommandText);
                 foreach (FieldVal entry in binds) {
                     string field = entry.Field;
                     string bindField = "@"+field;
@@ -241,7 +249,7 @@ public class SQLiteUtil
                     //} else {
                         //type = metadata.GetFieldDef(table, field).Type;
                     }
-                    Logger.Trace("  "+bindField+" = "+value);
+                    //Logger.Trace("  "+bindField+" = "+value);
                     command.Parameters.AddWithValue(bindField, value);
                 }
                 command.ExecuteNonQuery();
@@ -271,7 +279,7 @@ public class SQLiteUtil
             }
         }
 
-        Logger.Trace("Returning "+records.Count+" records");
+        //Logger.Trace("Returning "+records.Count+" records");
         return records;
     }
 
@@ -300,7 +308,7 @@ public class SQLiteUtil
             connection.Open();
             using (SqliteCommand command = connection.CreateCommand()) {
                 command.CommandText = "DELETE FROM "+table+" "+whereFieldsAndVals;
-                Logger.Trace(command.CommandText);
+                //Logger.Trace(command.CommandText);
                 foreach (FieldVal entry in binds) {
                     string field = entry.Field;
                     string bindField = "@"+field;
@@ -312,7 +320,7 @@ public class SQLiteUtil
                     } else {
                         type = metadata.GetFieldDef(table, field).Type;
                     }
-                    Logger.Trace("  "+bindField+" = "+value);
+                    //Logger.Trace("  "+bindField+" = "+value);
                     command.Parameters.AddWithValue(bindField, value);
                 }
                 command.ExecuteNonQuery();
