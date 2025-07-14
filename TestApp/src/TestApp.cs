@@ -15,10 +15,13 @@ public class TestApp
 
         app.Log("Logging a message via the default logger provided by AppLib.");
 
-        TestProperties();
-        TestAppDeduper();
-        TestGlobalDeduper();
+        //TestProperties();
+        //TestAppDeduper();
+        //TestGlobalMdpDeduper();
+        //TestGlobalFileDeduper();
         TestSoftDelete();
+        //TestKVPfile();
+        //TestKVPmdp();
         //TestHttp();
 
         app.Trace("Goodbye");
@@ -38,6 +41,24 @@ public class TestApp
         app.Trace(app.GetMDP().File);
     }
 
+    private static void TestKVPfile()
+    {
+        KVP kvpFile = new KVPfile(app, "TEST");
+        kvpFile.Add("key1", "value1");
+        kvpFile.Add("key2", "value2=5");
+        app.Trace(kvpFile.Value("key1"));
+        app.Trace(kvpFile.Value("key2"));
+    }
+
+    private static void TestKVPmdp()
+    {
+        KVP kvpMDP = new KVPmdp(app, "test");
+        kvpMDP.Add("key1", "value1");
+        kvpMDP.Add("key2", "value2=5");
+        app.Trace(kvpMDP.Value("key1"));
+        app.Trace(kvpMDP.Value("key2"));
+    }
+
     private static void TestAppDeduper()
     {
         Deduper deduper = new(app, "Test");
@@ -46,12 +67,13 @@ public class TestApp
         app.Trace("Deduper Key Never Exists: " + deduper.ContainsKey("test-key-never-exists"));
         List<WhereClause> whereClauses = new()
         {
-            new WhereClause("DEDUP_ID", "=", "TEST_test-key")
+            new WhereClause("KEY_ID", "=", "test-key"),
+            new WhereClause("GROUP_C", "=", "TEST")
         };
-        app.GetMDP().DeleteRecords("DEDUP", whereClauses);
+        app.GetMDP().DeleteRecords("DEDUPER", whereClauses);
     }
 
-    private static void TestGlobalDeduper()
+    private static void TestGlobalMdpDeduper()
     {
         Deduper globalDeduper = new(app, "Test", true);
         globalDeduper.AddItem("test-key", "This is a global test item");
@@ -59,9 +81,18 @@ public class TestApp
         app.Trace("Global Deduper Key Never Exists: " + globalDeduper.ContainsKey("test-key-never-exists"));
         List<WhereClause> whereClauses = new()
         {
-            new WhereClause("DEDUP_ID", "=", "GLOBAL_TEST_test-key")
+            new WhereClause("KEY_ID", "=", "test-key"),
+            new WhereClause("GROUP_C", "=", "GLOBAL_TEST")
         };
-        app.GetMDP().DeleteRecords("DEDUP", whereClauses);
+        app.GetMDP().DeleteRecords("DEDUPER", whereClauses);
+    }
+
+    private static void TestGlobalFileDeduper()
+    {
+        Deduper globalDeduper = new(app, "Test", true, false);
+        globalDeduper.AddItem("test-key", "This is a global test item");
+        app.Trace("Global Deduper Key Exists: " + globalDeduper.ContainsKey("test-key"));
+        app.Trace("Global Deduper Key Never Exists: " + globalDeduper.ContainsKey("test-key-never-exists"));
     }
 
     private static void TestSoftDelete()

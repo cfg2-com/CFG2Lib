@@ -117,12 +117,7 @@ public class AppLib
     /// <returns>[syncDir]/Backup/[baseDir]/[appName]</returns>
     private string GetAppBackupDir()
     {
-        string dir = Path.Combine(GetBackupDir(), this.baseDir);
-        if (!Directory.Exists(dir)) {
-            Logger.Trace("Creating: " + dir);
-            Directory.CreateDirectory(dir);
-        }
-        dir = Path.Combine(dir, appName);
+        string dir = Path.Combine(GetBackupDir(), appName);
         if (!Directory.Exists(dir)) {
             Logger.Trace("Creating AppBackupDir: " + dir);
             Directory.CreateDirectory(dir);
