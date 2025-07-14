@@ -1,8 +1,5 @@
 namespace CFG2.Utils.AppLib;
 
-using CFG2.Utils.LogLib;
-using CFG2.Utils.SQLiteLib;
-
 public class Deduper
 {
     private KVP kvp;

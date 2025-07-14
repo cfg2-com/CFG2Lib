@@ -1,0 +1,17 @@
+using CFG2.Utils.SQLiteLib;
+
+namespace CFG2.Utils.AppLib;
+
+public class KVPmemory(AppLib app) : KVP(app, "MEMORY")
+{
+    public override void Add(string key, string value, string debug = "")
+    {
+        if (ShouldAdd(key, value))
+        {
+            //App.Trace($"Adding kvp: {key}={value}");
+            if (!string.IsNullOrEmpty(debug)) { App.Log(debug); }
+
+            Add(key, value);
+        }
+    }
+}

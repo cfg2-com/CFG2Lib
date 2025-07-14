@@ -48,6 +48,7 @@ public class TestApp
         kvpFile.Add("key2", "value2=5");
         app.Trace(kvpFile.Value("key1"));
         app.Trace(kvpFile.Value("key2"));
+        app.Trace(kvpFile.ContainsKey("key1")+"");
     }
 
     private static void TestKVPmdp()
@@ -57,6 +58,7 @@ public class TestApp
         kvpMDP.Add("key2", "value2=5");
         app.Trace(kvpMDP.Value("key1"));
         app.Trace(kvpMDP.Value("key2"));
+        app.Trace(kvpMDP.ContainsKey("key1")+"");
     }
 
     private static void TestAppDeduper()

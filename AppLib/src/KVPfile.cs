@@ -26,18 +26,26 @@ public class KVPfile : KVP
 
         foreach (string line in File.ReadLines(this.file))
         {
-            string[] parts = line.Split("=");
-            string key = parts[0];
-            string value = "";
-            if (parts.Length > 1)
+            if (!string.IsNullOrEmpty(line) && !line.StartsWith('#') && !line.StartsWith("--") && !line.StartsWith(@"//"))
             {
-                for (int x = 1; x < parts.Length; x++)
+                string key = line;
+                string value = "";
+
+                if (line.Contains('='))
                 {
-                    if (x > 1) { value += "="; }
-                    value += parts[x];
+                    string[] parts = line.Split("=");
+                    key = parts[0];
+                    if (parts.Length > 1)
+                    {
+                        for (int x = 1; x < parts.Length; x++)
+                        {
+                            if (x > 1) { value += "="; }
+                            value += parts[x];
+                        }
+                    }
                 }
+                Add(key, value);
             }
-            Add(key, value);
         }
     }
 

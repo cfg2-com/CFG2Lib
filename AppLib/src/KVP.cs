@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace CFG2.Utils.AppLib;
 
 public abstract class KVP
@@ -38,6 +40,7 @@ public abstract class KVP
 
     public AppLib App => app;
     public string Group => group;
+    public Dictionary<string, string>.KeyCollection Keys => kvp.Keys;
     public abstract void Add(string key, string value, string debug = "");
 
     protected void Add(string key, string value)
