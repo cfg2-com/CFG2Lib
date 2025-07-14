@@ -1,6 +1,9 @@
 # CFG2.Utils.SQLiteLib
 
-Some convenience utilities for making SQLite even easier to use/work with
+A library of SQLite functions.
+
+Nothing in here is rocket science, but IMO it make it easier to work with SQLite for things like dynamically creating/updating tables 
+and running common CRUD type functions.
 
 ## Usage Examples
 
@@ -9,11 +12,22 @@ using CFG2.Utils.SQLiteLib;
 
 public class Program
 {
-    private static readonly Logger logger = Logger.Instance(@"C:\My\App");
+    private SQLiteUtil sqliteUtil;
 
     static void Main(string[] args)
     {
-        logger.Warn("Hello");
+        sqliteUtil = new SQLiteUtil("c:\path\to\sqlite.db");
+
+        sqliteUtil.RegisterField(new FieldDef("MY_TABLE", "KEY_ID", DataType.TEXT));
+        sqliteUtil.RegisterField(new FieldDef("MY_TABLE", "VALUE_X", DataType.TEXT));
+        sqliteUtil.RegisterField(new FieldDef("MY_TABLE", "DEBUG_X", DataType.TEXT));
+        sqliteUtil.RegisterField(new FieldDef("MY_TABLE", "CREATED_DT", DataType.EXT_DATETIME));
+
+        Record record = new Record();
+        record.AddField("KEY_ID", "key");
+        record.AddField("VALUE_X", "value");
+        record.AddField("CREATED_DT", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+        sqliteUtil.InsertRecord(table, record);
     }
 }
 ```
