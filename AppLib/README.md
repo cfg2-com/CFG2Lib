@@ -6,7 +6,7 @@ An opinionated application configuration library. Those opinions include, but ar
 - An app config lib should be *simple* to use (see example)
 - An app config lib should default as much as possible (see opinions above)
 
-### Usage Examples
+## Usage Examples
 
 ```
 namespace CFG2.Test;
@@ -40,6 +40,13 @@ public class TestApp
 ```
 
 ## Release Notes
+
+### 1.0.2
+- ConfigProperties added
+
+### 1.0.1
+- KVP added
+- Deduper added
 
 ### 1.0.0
 - Initial Release
