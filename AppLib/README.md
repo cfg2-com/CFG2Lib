@@ -48,6 +48,12 @@ public class TestApp
 
 ## Release Notes
 
+### 1.0.5
+- Introduced MigrationUtils
+
+### 1.0.4
+- Moved ConfigProperties to AppConfig
+
 ### 1.0.2
 - ConfigProperties added
 

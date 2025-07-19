@@ -34,7 +34,7 @@ public class KVPmdp : KVP
         sqliteUtil.RegisterField(new FieldDef(table, "DEBUG_X", DataType.TEXT));
         sqliteUtil.RegisterField(new FieldDef(table, "CREATED_DT", DataType.EXT_DATETIME));
 
-        List<Record> records = sqliteUtil.SelectRecords("SELECT "+keyField+", VALUE_X FROM " + table + " WHERE "+groupField+" = '" + Group + "'");
+        List<Record> records = sqliteUtil.SelectRecords("SELECT " + keyField + ", VALUE_X FROM " + table + " WHERE " + groupField + " = '" + Group + "'");
         foreach (Record record in records)
         {
             string key = record.FieldVal(keyField);
@@ -57,5 +57,10 @@ public class KVPmdp : KVP
 
             Add(key, value);
         }
+    }
+
+    public string GetFile()
+    {
+        return sqliteUtil.File;
     }
 }

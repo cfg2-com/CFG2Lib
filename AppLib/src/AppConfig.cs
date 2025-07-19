@@ -4,8 +4,11 @@ namespace CFG2.Utils.AppLib;
 
 public class AppConfig
 {
+    private App app;
+    private string configFile;
+    private string mdpTable;
     private KVP kvp;
-    private KVP kvpMDP;
+    private KVPmdp kvpMDP;
     private KVP kvpFile;
 
     /// <summary>
@@ -19,6 +22,16 @@ public class AppConfig
         if (string.IsNullOrEmpty(cfgFile)) { cfgFile = "app.cfg"; }
         if (string.IsNullOrEmpty(mdpTable)) { mdpTable = "APP_CONFIG"; }
 
+        this.app = app;
+        configFile = Path.Combine(app.Dir, cfgFile);
+        this.mdpTable = mdpTable;
+
+        Reload();
+    }
+
+    public void Reload()
+    {
+        app.Log("Loading AppConfig");
         kvp = new KVPmemory(app);
 
         kvpMDP = new KVPmdp(app, app.Name, mdpTable, "KEY_ID", "APP_C");
@@ -27,17 +40,14 @@ public class AppConfig
             kvp.Add(key, kvpMDP.Value(key));
         }
 
-        string file = Path.Combine(app.Dir, cfgFile);
-        if (File.Exists(file))
+        if (File.Exists(configFile))
         {
-            kvpFile = new KVPfile(app, app.Name, file);
+            kvpFile = new KVPfile(app, app.Name, configFile);
             foreach (string key in kvpFile.Keys)
             {
                 kvp.Add(key, kvpFile.Value(key));
             }
         }
-
-        //app.Trace(kvp.)
     }
 
     public bool ContainsProperty(string property)
@@ -71,5 +81,23 @@ public class AppConfig
         {
             return value;
         }
+    }
+
+    /// <summary>
+    /// Get the full path to the config file
+    /// </summary>
+    /// <returns></returns>
+    public string GetFile()
+    {
+        return configFile;
+    }
+
+    /// <summary>
+    /// Get the full path to the MDP SQLite database holding the config values
+    /// </summary>
+    /// <returns></returns>
+    public string GetDB()
+    {
+        return kvpMDP.GetFile();
     }
 }
