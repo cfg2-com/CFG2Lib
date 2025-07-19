@@ -18,10 +18,11 @@ public class TestApp
         //TestAppConfig();
         //TestMigrateAppConfig();
         //TestMigrateFile();
+        TestMigrateDeduper();
         //TestProperties();
         //TestAppDeduper();
         //TestGlobalMdpDeduper();
-        TestGlobalFileDeduper();
+        //TestGlobalFileDeduper();
         //TestSoftDelete();
         //TestKVPfile();
         //TestKVPmdp();
@@ -114,6 +115,24 @@ public class TestApp
         List<WhereClause> whereClauses = new()
         {
             new WhereClause("KEY_ID", "=", "test-key"),
+            new WhereClause("GROUP_C", "=", "TEST")
+        };
+        app.GetMDP().DeleteRecords("DEDUPER", whereClauses);
+    }
+
+    private static void TestMigrateDeduper()
+    {
+        string legacyFile = Path.Combine(app.Dir, "temp.txt");
+        File.WriteAllText(legacyFile, @"c:\some\file.txt");
+
+        Deduper deduper = new(app, "Test");
+
+        MigrationUtils.MigrateDeduper(legacyFile, deduper);
+
+        app.Trace("Deduper Key Exists: " + deduper.ContainsKey(@"c:\some\file.txt"));
+        List<WhereClause> whereClauses = new()
+        {
+            new WhereClause("KEY_ID", "=", @"c:\some\file.txt"),
             new WhereClause("GROUP_C", "=", "TEST")
         };
         app.GetMDP().DeleteRecords("DEDUPER", whereClauses);

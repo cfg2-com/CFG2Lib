@@ -27,6 +27,8 @@ public class Deduper
         Reload();
     }
 
+    public bool UseMDP => useMDP;
+
     public void Reload()
     {
         if (useMDP)

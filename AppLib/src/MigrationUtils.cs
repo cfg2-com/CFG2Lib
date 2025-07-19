@@ -50,4 +50,51 @@ public class MigrationUtils
         }
         return success;
     }
+    
+    public static bool MigrateDeduper(string legacyFile, Deduper deduper)
+    {
+        bool success = false;
+        if (!deduper.UseMDP && File.Exists(deduper.GetFile()))
+        {
+            Logger.Trace("Skipping migration (but returning success) because Deduper file already exists: " + deduper.GetFile());
+            success = true;
+        }
+        else if (File.Exists(legacyFile))
+        {
+            Logger.Trace($"Moving '{legacyFile}' to '{deduper.GetFile()}'");
+
+            if (deduper.UseMDP)
+            {
+                using (StreamReader sr = File.OpenText(legacyFile))
+                {
+                    string line = "";
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (!string.IsNullOrEmpty(line) && !line.Trim().StartsWith("#") && (line.Trim().Length != 0))
+                        {
+                            deduper.AddItem(line, "From MigrationUtils.MigrateDeduper()");
+                        }
+                    }
+                }
+                File.Delete(legacyFile);
+            }
+            else
+            {
+                File.Move(legacyFile, deduper.GetFile());
+            }
+
+            if (!File.Exists(legacyFile) && File.Exists(deduper.GetFile()))
+            {
+                Logger.Trace("legacyFile moved successfully to " + deduper.GetFile());
+                success = true;
+            }
+        }
+
+        if (success)
+        {
+            deduper.Reload();
+        }
+        return success;
+    }
+    
 }
