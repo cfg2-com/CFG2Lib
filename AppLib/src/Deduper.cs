@@ -2,8 +2,12 @@ namespace CFG2.Utils.AppLib;
 
 public class Deduper
 {
-    private readonly string file;
-    private readonly string mdpFile;
+    private App app;
+    private string name;
+    private bool global;
+    private bool useMDP;
+    private string file;
+    private string mdpFile;
     private KVP kvp;
 
     /// <summary>
@@ -14,6 +18,16 @@ public class Deduper
     /// <param name="global">If true, this deduper will be global (i.e. uniqueness will be looked at across any "app" - not just this one).</param>
     /// <param name="useMDP">If true, will use the MDP.db SQLite db at the app SyncDir. If false, will write to file either in the AppDataDir or BackupDir depending on value of "global"</param>
     public Deduper(App app, string name, bool global = false, bool useMDP = true)
+    {
+        this.app = app;
+        this.name = name;
+        this.global = global;
+        this.useMDP = useMDP;
+
+        Reload();
+    }
+
+    public void Reload()
     {
         if (useMDP)
         {
@@ -44,20 +58,18 @@ public class Deduper
     }
     
     /// <summary>
-    /// Get the full path to the file
+    /// Get the full path to the file (plain txt or MDP SQLite db)
     /// </summary>
     /// <returns></returns>
     public string GetFile()
     {
-        return file;
-    }
-
-    /// <summary>
-    /// Get the full path to the MDP SQLite database holding the values
-    /// </summary>
-    /// <returns></returns>
-    public string GetDB()
-    {
-        return mdpFile;
+        if (useMDP)
+        {
+            return mdpFile;
+        }
+        else
+        {
+            return file;
+        }
     }
 }

@@ -7,6 +7,7 @@
     <AssemblyName>CFG2.AppLib</AssemblyName>
     <RepositoryUrl>https://github.com/cfg2-com/CFG2Lib</RepositoryUrl>
     <Version>$(APP_LIB_VER)</Version>
+    <Copyright>Copyright (c) $([System.DateTime]::Now.ToString('yyyy')) Communication Freedom, LLC</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

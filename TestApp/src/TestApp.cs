@@ -17,11 +17,11 @@ public class TestApp
 
         //TestAppConfig();
         //TestMigrateAppConfig();
-        TestMigrateFile();
+        //TestMigrateFile();
         //TestProperties();
         //TestAppDeduper();
         //TestGlobalMdpDeduper();
-        //TestGlobalFileDeduper();
+        TestGlobalFileDeduper();
         //TestSoftDelete();
         //TestKVPfile();
         //TestKVPmdp();
@@ -107,6 +107,7 @@ public class TestApp
     private static void TestAppDeduper()
     {
         Deduper deduper = new(app, "Test");
+        app.Trace("Deduper File: "+deduper.GetFile());
         deduper.AddItem("test-key", "This is a test item");
         app.Trace("Deduper Key Exists: " + deduper.ContainsKey("test-key"));
         app.Trace("Deduper Key Never Exists: " + deduper.ContainsKey("test-key-never-exists"));
@@ -121,6 +122,7 @@ public class TestApp
     private static void TestGlobalMdpDeduper()
     {
         Deduper globalDeduper = new(app, "Test", true);
+        app.Trace("Deduper File: "+globalDeduper.GetFile());
         globalDeduper.AddItem("test-key", "This is a global test item");
         app.Trace("Global Deduper Key Exists: " + globalDeduper.ContainsKey("test-key"));
         app.Trace("Global Deduper Key Never Exists: " + globalDeduper.ContainsKey("test-key-never-exists"));
@@ -135,6 +137,7 @@ public class TestApp
     private static void TestGlobalFileDeduper()
     {
         Deduper globalDeduper = new(app, "Test", true, false);
+        app.Trace("Deduper File: "+globalDeduper.GetFile());
         globalDeduper.AddItem("test-key", "This is a global test item");
         app.Trace("Global Deduper Key Exists: " + globalDeduper.ContainsKey("test-key"));
         app.Trace("Global Deduper Key Never Exists: " + globalDeduper.ContainsKey("test-key-never-exists"));
