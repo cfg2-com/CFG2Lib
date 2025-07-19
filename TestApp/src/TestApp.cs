@@ -6,20 +6,21 @@ using CFG2.Utils.SQLiteLib;
 
 public class TestApp
 {
-    private static AppLib app;
+    private static App app;
 
     static void Main(string[] args)
     {
-        // Initialize AppLib
+        // Initialize App
         app = new();
 
         app.Log("Logging a message via the default logger provided by AppLib.");
 
+        TestAppConfig();
         //TestProperties();
         //TestAppDeduper();
         //TestGlobalMdpDeduper();
         //TestGlobalFileDeduper();
-        TestSoftDelete();
+        //TestSoftDelete();
         //TestKVPfile();
         //TestKVPmdp();
         //TestHttp();
@@ -27,14 +28,26 @@ public class TestApp
         app.Trace("Goodbye");
     }
 
+    private static void TestAppConfig()
+    {
+        AppConfig appConfig = new AppConfig(app);
+        appConfig.AddPersistedProperty("appBackupDir", app.BackupDir);
+        app.Trace("prop val: " + appConfig.GetProperty("appBackupDir"));
+
+        string tempProp = "temp-prop";
+        app.Trace(tempProp+" (before): " + appConfig.GetProperty(tempProp));
+        appConfig.AddTempProperty(tempProp, "some value");
+        app.Trace(tempProp+" (after): " + appConfig.GetProperty(tempProp));
+    }
+
     private static void TestProperties()
     {
-        app.Trace(app.AppName);
-        app.Trace(app.AppDir);
-        app.Trace(app.AppLogDir);
-        app.Trace(app.AppDataDir);
-        app.Trace(app.AppBackupDir);
-        app.Trace(app.AppSoftDeleteDir);
+        app.Trace(app.Name);
+        app.Trace(app.Dir);
+        app.Trace(app.LogDir);
+        app.Trace(app.DataDir);
+        app.Trace(app.BackupDir);
+        app.Trace(app.SoftDeleteDir);
         app.Trace(app.SyncDir);
         app.Trace(app.BackupDir);
         app.Trace(app.InboxDir);

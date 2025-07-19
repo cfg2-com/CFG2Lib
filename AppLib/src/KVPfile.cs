@@ -6,11 +6,11 @@ public class KVPfile : KVP
 {
     private readonly string file;
 
-    public KVPfile(AppLib app, string group, string? file = null) : base(app, group)
+    public KVPfile(App app, string group, string? file = null) : base(app, group)
     {
         if (string.IsNullOrEmpty(file))
         {
-            this.file = Path.Combine(App.AppDataDir, "kvp-"+Group+".txt");
+            this.file = Path.Combine(App.DataDir, "kvp-"+Group+".txt");
             App.Trace("KVPfile file param is empty, defaulting to: "+this.file);
         }
         else

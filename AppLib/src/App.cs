@@ -5,17 +5,20 @@ using CFG2.Utils.SysLib;
 using CFG2.Utils.LogLib;
 using CFG2.Utils.SQLiteLib;
 
-public class AppLib
+public class App
 {
     private static Logger logger;
     private readonly string configRootDir;
     private readonly string appName;
     private readonly string baseDir;
+    private readonly int retentionDays;
     private SQLiteUtil mdp;
 
 
-    public AppLib(string? appName = null, bool configInSyncDir = true, string? baseDir = null)
+    public App(string? appName = null, bool configInSyncDir = true, string? baseDir = null, int retentionDays = 30)
     {
+        this.retentionDays = retentionDays;
+
         // Make sure we have an AppName
         if (string.IsNullOrEmpty(appName))
         {
@@ -63,18 +66,20 @@ public class AppLib
         // Get (and create if necessary) the app directory: {configRootDir}/{appName}.
         // While at the same time initializing the logger instance.
         logger = Logger.Instance(GetAppDir());
+
+        CleanupSoftDeleteDirectory(this.retentionDays);
     }
 
-    public string AppName => GetAppName();
-    public string AppDir => GetAppDir();
-    public string AppDataDir => GetAppDataDir();
-    public string AppLogDir => GetAppLogDir();
-    public string AppSoftDeleteDir => GetAppSoftDeleteDir();
-    public string AppBackupDir => GetAppBackupDir();
+    public string Name => GetAppName();
+    public string Dir => GetAppDir();
+    public string DataDir => GetAppDataDir();
+    public string LogDir => GetAppLogDir();
+    public string SoftDeleteDir => GetAppSoftDeleteDir();
+    public string BackupDir => GetAppBackupDir();
+    public string LogFile => logger.GetFile();
     public string SyncDir => GetSyncDir();
     public string InboxDir => GetInboxDir();
-    public string BackupDir => GetBackupDir();
-    public string LogFile => logger.GetFile();
+    public string BaseBackupDir => GetBackupBaseDir();
 
     private string GetAppName()
     {
@@ -117,7 +122,7 @@ public class AppLib
     /// <returns>[syncDir]/Backup/[baseDir]/[appName]</returns>
     private string GetAppBackupDir()
     {
-        string dir = Path.Combine(GetBackupDir(), appName);
+        string dir = Path.Combine(GetBackupBaseDir(), appName);
         if (!Directory.Exists(dir)) {
             Logger.Trace("Creating AppBackupDir: " + dir);
             Directory.CreateDirectory(dir);
@@ -127,7 +132,7 @@ public class AppLib
 
     private string GetAppSoftDeleteDir()
     {
-        string dir = Path.Combine(AppBackupDir, "Delete");
+        string dir = Path.Combine(BackupDir, "Delete");
         if (!Directory.Exists(dir)) {
             Logger.Trace("Creating AppSoftDeleteDir: " + dir);
             Directory.CreateDirectory(dir);
@@ -184,17 +189,17 @@ public class AppLib
     {
         string dir = Path.Combine(GetSyncDir(), "Backup");
         if (!Directory.Exists(dir)) {
-            Logger.Trace("Creating BackupRoot: " + dir);
+            Logger.Trace("Creating BackupRootDir: " + dir);
             Directory.CreateDirectory(dir);
         }
         return dir;
     }
 
-    private string GetBackupDir()
+    private string GetBackupBaseDir()
     {
         string dir = Path.Combine(GetBackupRoot(), this.baseDir);
         if (!Directory.Exists(dir)) {
-            Logger.Trace("Creating BackupDir: " + dir);
+            Logger.Trace("Creating BackupBaseDir: " + dir);
             Directory.CreateDirectory(dir);
         }
         return dir;

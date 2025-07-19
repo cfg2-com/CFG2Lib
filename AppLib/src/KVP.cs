@@ -4,11 +4,11 @@ namespace CFG2.Utils.AppLib;
 
 public abstract class KVP
 {
-    private readonly AppLib app;
+    private readonly App app;
     private readonly string group;
     protected Dictionary<string, string> kvp = [];
 
-    public KVP(AppLib app, string group)
+    public KVP(App app, string group)
     {
         if (app == null)
         {
@@ -38,7 +38,7 @@ public abstract class KVP
         this.group = group.ToUpper();
     }
 
-    public AppLib App => app;
+    public App App => app;
     public string Group => group;
     public Dictionary<string, string>.KeyCollection Keys => kvp.Keys;
     public abstract void Add(string key, string value, string debug = "");

@@ -11,7 +11,7 @@ public class Deduper
     /// <param name="name">A unique name for the deduper. The value will be forced to UPPER_CASE and should NOT contain any special characters.</param>
     /// <param name="global">If true, this deduper will be global (i.e. uniqueness will be looked at across any "app" - not just this one).</param>
     /// <param name="useMDP">If true, will use the MDP.db SQLite db at the app SyncDir. If false, will write to file either in the AppDataDir or BackupDir depending on value of "global"</param>
-    public Deduper(AppLib app, string name, bool global = false, bool useMDP = true)
+    public Deduper(App app, string name, bool global = false, bool useMDP = true)
     {        
         if (useMDP)
         {
@@ -19,7 +19,7 @@ public class Deduper
         }
         else
         {
-            string dir = app.AppDataDir;
+            string dir = app.DataDir;
             if (global)
             {
                 name = "GLOBAL_" + name;

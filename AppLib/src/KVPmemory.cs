@@ -2,7 +2,7 @@ using CFG2.Utils.SQLiteLib;
 
 namespace CFG2.Utils.AppLib;
 
-public class KVPmemory(AppLib app) : KVP(app, "MEMORY")
+public class KVPmemory(App app) : KVP(app, "MEMORY")
 {
     public override void Add(string key, string value, string debug = "")
     {
