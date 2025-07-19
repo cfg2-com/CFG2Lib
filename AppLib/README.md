@@ -48,6 +48,9 @@ public class TestApp
 
 ## Release Notes
 
+### 1.0.7
+- Deduper Improvements
+
 ### 1.0.6
 - Additional MigrationUtils
 
