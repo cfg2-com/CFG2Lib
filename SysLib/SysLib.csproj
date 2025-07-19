@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>CFG2.SysLib</AssemblyName>
     <RepositoryUrl>https://github.com/cfg2-com/CFG2Lib</RepositoryUrl>
-    <Version>$(TMP_VERSION)</Version>
+    <Version>$(SYS_LIB_VER)</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

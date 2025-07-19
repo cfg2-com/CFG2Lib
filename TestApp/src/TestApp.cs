@@ -15,8 +15,8 @@ public class TestApp
 
         app.Log("Logging a message via the default logger provided by AppLib.");
 
-        TestAppConfig();
-        //TestProperties();
+        //TestAppConfig();
+        TestProperties();
         //TestAppDeduper();
         //TestGlobalMdpDeduper();
         //TestGlobalFileDeduper();
@@ -49,7 +49,8 @@ public class TestApp
         app.Trace(app.BackupDir);
         app.Trace(app.SoftDeleteDir);
         app.Trace(app.SyncDir);
-        app.Trace(app.BackupDir);
+        app.Trace(app.BackupBaseDir);
+        app.Trace(app.BackupRootDir);
         app.Trace(app.InboxDir);
         app.Trace(app.GetMDP().File);
     }

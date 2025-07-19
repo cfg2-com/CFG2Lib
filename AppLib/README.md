@@ -6,6 +6,12 @@ An opinionated application configuration library. Those opinions include, but ar
 - An app config lib should be *simple* to use (see example)
 - An app config lib should default as much as possible (see opinions above)
 
+Some ways AppLib attempts to be easy to use include:
+
+- Providing a consistent filesystem structure for any of your applications.
+- Providing a way to get application configuration properties.
+- Providing utility functionality like key value pair (KVP) management, and deduplication control.
+
 ## Usage Examples
 
 ```
@@ -17,18 +23,19 @@ public class TestApp
 {
     static void Main(string[] args)
     {
-        AppLib app = new();
+        App app = new();
 
-        app.Log("Logging a message via the default logger provided by AppLib.");
+        app.Log("Logging a message via the default logger provided by App instance.");
 
-        app.Trace(app.AppName);
-        app.Trace(app.AppDir);
-        app.Trace(app.AppLogDir);
-        app.Trace(app.AppDataDir);
-        app.Trace(app.AppBackupDir);
-        app.Trace(app.AppSoftDeleteDir);
-        app.Trace(app.SyncDir);
+        app.Trace(app.Name);
+        app.Trace(app.Dir);
+        app.Trace(app.LogDir);
+        app.Trace(app.DataDir);
         app.Trace(app.BackupDir);
+        app.Trace(app.SoftDeleteDir);
+        app.Trace(app.BackupBaseDir);
+        app.Trace(app.BackupRootDir);
+        app.Trace(app.SyncDir);
         app.Trace(app.InboxDir);
 
         app.CleanupSoftDeleteDirectory(4);

@@ -76,10 +76,11 @@ public class App
     public string LogDir => GetAppLogDir();
     public string SoftDeleteDir => GetAppSoftDeleteDir();
     public string BackupDir => GetAppBackupDir();
+    public string BackupBaseDir => GetBackupBaseDir();
+    public string BackupRootDir => GetBackupRootDir();
     public string LogFile => logger.GetFile();
     public string SyncDir => GetSyncDir();
     public string InboxDir => GetInboxDir();
-    public string BaseBackupDir => GetBackupBaseDir();
 
     private string GetAppName()
     {
@@ -185,7 +186,7 @@ public class App
         return dir;
     }
 
-    private string GetBackupRoot()
+    private string GetBackupRootDir()
     {
         string dir = Path.Combine(GetSyncDir(), "Backup");
         if (!Directory.Exists(dir)) {
@@ -197,7 +198,7 @@ public class App
 
     private string GetBackupBaseDir()
     {
-        string dir = Path.Combine(GetBackupRoot(), this.baseDir);
+        string dir = Path.Combine(GetBackupRootDir(), this.baseDir);
         if (!Directory.Exists(dir)) {
             Logger.Trace("Creating BackupBaseDir: " + dir);
             Directory.CreateDirectory(dir);
