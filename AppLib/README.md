@@ -48,6 +48,10 @@ public class TestApp
 
 ## Release Notes
 
+### 1.0.10
+- Bug fix for named app
+- Bug fix for MDP Deduper
+
 ### 1.0.7
 - Deduper Improvements
 

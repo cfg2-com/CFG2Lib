@@ -25,6 +25,11 @@ public class App
             this.appName = Process.GetCurrentProcess().ProcessName;
             Logger.Trace("Using Process.GetCurrentProcess().ProcessName for appName: " + this.appName);
         }
+        else
+        {
+            Logger.Trace("Using provided appName: " + appName);
+            this.appName = appName;
+        }
 
         // Make sure we have a baseDir
         if (string.IsNullOrEmpty(baseDir))
@@ -58,6 +63,7 @@ public class App
         {
             this.configRootDir = Path.Combine(SysLib.GetSpecialFolder(SpecialFolder.AppData), this.baseDir);
         }
+        Logger.Trace("ConfigRootDir: " + this.configRootDir);
         if (!Directory.Exists(this.configRootDir))
         {
             Directory.CreateDirectory(this.configRootDir);

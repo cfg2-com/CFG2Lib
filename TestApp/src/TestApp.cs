@@ -7,26 +7,30 @@ using CFG2.Utils.SQLiteLib;
 public class TestApp
 {
     private static App app;
+    private static App app2;
 
     static void Main(string[] args)
     {
         // Initialize App
         app = new();
+        app2 = new("Named Test App", false);
 
         app.Log("Logging a message via the default logger provided by AppLib.");
 
         //TestAppConfig();
         //TestMigrateAppConfig();
         //TestMigrateFile();
-        TestMigrateDeduper();
+        //TestMigrateDeduper();
         //TestProperties();
-        //TestAppDeduper();
+        TestAppMdpDeduper();
         //TestGlobalMdpDeduper();
         //TestGlobalFileDeduper();
         //TestSoftDelete();
         //TestKVPfile();
         //TestKVPmdp();
         //TestHttp();
+
+        app = new(null, false);
 
         app.Trace("Goodbye");
     }
@@ -105,17 +109,25 @@ public class TestApp
         app.Trace(kvpMDP.ContainsKey("key1")+"");
     }
 
-    private static void TestAppDeduper()
+    private static void TestAppMdpDeduper()
     {
-        Deduper deduper = new(app, "Test");
+        Deduper deduper = new(app, "Test Deduper");
         app.Trace("Deduper File: "+deduper.GetFile());
         deduper.AddItem("test-key", "This is a test item");
         app.Trace("Deduper Key Exists: " + deduper.ContainsKey("test-key"));
         app.Trace("Deduper Key Never Exists: " + deduper.ContainsKey("test-key-never-exists"));
+
+        Deduper deduper2 = new(app2, "Test Deduper");
+        deduper2.AddItem("test-key", "This is a test item");
+        deduper2.AddItem("test-key-app2", "This is a test item only in app2");
+
+        app.Trace("Deduper Key Exists (true): " + deduper2.ContainsKey("test-key-app2"));
+        app.Trace("Deduper Key Exists (false): " + deduper.ContainsKey("test-key-app2"));
+
         List<WhereClause> whereClauses = new()
         {
-            new WhereClause("KEY_ID", "=", "test-key"),
-            new WhereClause("GROUP_C", "=", "TEST")
+            new WhereClause("KEY_ID", "LIKE", "test-key%"),
+            new WhereClause("GROUP_C", "LIKE", "%TEST APP%")
         };
         app.GetMDP().DeleteRecords("DEDUPER", whereClauses);
     }
@@ -148,7 +160,7 @@ public class TestApp
         List<WhereClause> whereClauses = new()
         {
             new WhereClause("KEY_ID", "=", "test-key"),
-            new WhereClause("GROUP_C", "=", "GLOBAL_TEST")
+            new WhereClause("GROUP_C", "=", "GLOBAL - TEST")
         };
         app.GetMDP().DeleteRecords("DEDUPER", whereClauses);
     }

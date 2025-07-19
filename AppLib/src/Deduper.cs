@@ -31,9 +31,15 @@ public class Deduper
 
     public void Reload()
     {
+        string group = app.Name+" - "+name;
+        if (global)
+        {
+            group = "GLOBAL - "+name;
+        }
+
         if (useMDP)
         {
-            kvp = new KVPmdp(app, name, "DEDUPER");
+            kvp = new KVPmdp(app, group, "DEDUPER");
             mdpFile = app.GetMDP().File;
         }
         else
@@ -41,11 +47,10 @@ public class Deduper
             string dir = app.DataDir;
             if (global)
             {
-                name = "GLOBAL_" + name;
                 dir = app.BackupDir;
             }
             file = Path.Combine(dir, $"dedup-{name.ToUpper()}.txt");
-            kvp = new KVPfile(app, name, file);
+            kvp = new KVPfile(app, group, file);
         }
     }
 
