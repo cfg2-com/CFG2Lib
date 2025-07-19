@@ -16,7 +16,8 @@ public class TestApp
         app.Log("Logging a message via the default logger provided by AppLib.");
 
         //TestAppConfig();
-        TestMigrateAppConfig();
+        //TestMigrateAppConfig();
+        TestMigrateFile();
         //TestProperties();
         //TestAppDeduper();
         //TestGlobalMdpDeduper();
@@ -54,6 +55,18 @@ public class TestApp
         app.Trace("prop that should exist: " + appConfig.GetProperty(testProp));
 
         File.Delete(appConfig.GetFile());
+    }
+
+    private static void TestMigrateFile()
+    {
+        string legacyFile = Path.Combine(app.Dir, "temp.txt");
+        string newFile = Path.Combine(app.Dir, "new.txt");
+        app.Trace("Migration success (should be false)=" + MigrationUtils.MigrateFile(legacyFile, newFile));
+
+        File.WriteAllText(legacyFile, "Junk");
+        app.Trace("Migration success (should be true)=" + MigrationUtils.MigrateFile(legacyFile, newFile));
+
+        File.Delete(newFile);
     }
 
     private static void TestProperties()

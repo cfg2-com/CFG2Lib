@@ -18,7 +18,7 @@ public class MigrationUtils
             File.Move(legacyFile, appConfig.GetFile());
             if (!File.Exists(legacyFile) && File.Exists(appConfig.GetFile()))
             {
-                Logger.Trace("AppConfig moved successfully to "+appConfig.GetFile());
+                Logger.Trace("AppConfig moved successfully to " + appConfig.GetFile());
                 success = true;
             }
         }
@@ -26,6 +26,27 @@ public class MigrationUtils
         if (success)
         {
             appConfig.Reload();
+        }
+        return success;
+    }
+    
+    public static bool MigrateFile(string legacyFile, string newFile)
+    {
+        bool success = false;
+        if (File.Exists(newFile))
+        {
+            Logger.Trace("Skipping migration (but returning success) because newFile already exists: " + newFile);
+            success = true;
+        }
+        else if (File.Exists(legacyFile))
+        {
+            Logger.Trace($"Moving '{legacyFile}' to '{newFile}'");
+            File.Move(legacyFile, newFile);
+            if (!File.Exists(legacyFile) && File.Exists(newFile))
+            {
+                Logger.Trace("legacyFile moved successfully to "+newFile);
+                success = true;
+            }
         }
         return success;
     }
