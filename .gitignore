@@ -1,5 +1,8 @@
 .env
+setEnv.bat
 r*Lib.bat
 
+*/bin/Release/*
 */bin/Debug/*
 */obj/*
+*/package/*

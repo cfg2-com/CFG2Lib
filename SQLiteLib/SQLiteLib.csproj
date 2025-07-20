@@ -10,18 +10,23 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <UseProjectReferences Condition="'$(UseProjectReferences)' == ''">true</UseProjectReferences>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(UseProjectReferences)' == 'true'">
     <!-- Use local library versions when developing -->
     <ProjectReference Include="..\LogLib\LogLib.csproj" />
+  </ItemGroup>
 
+  <ItemGroup Condition="'$(UseProjectReferences)' != 'true'">
     <!-- Use published versions when packaging ("PrivateAssets" is critical) -->
-    <PackageReference Include="CFG2.LogLib" Version="$(LOG_LIB_VER)" PrivateAssets="All" />
+    <PackageReference Include="CFG2.LogLib" Version="[$(LOG_LIB_VER),)" PrivateAssets="All" />
 
     <!-- Other dependencies -->
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.7" />
+  </ItemGroup>
 
+  <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
