@@ -4,9 +4,9 @@ namespace CFG2.Utils.AppLib;
 
 public abstract class KVP
 {
-    private readonly App app;
-    private readonly string group;
-    protected Dictionary<string, string> kvp = [];
+    private readonly App _app;
+    private readonly string _group;
+    protected Dictionary<string, string> _kvp = [];
 
     public KVP(App app, string group)
     {
@@ -34,34 +34,50 @@ public abstract class KVP
             throw new ArgumentException("Group cannot contain special characters: " + group);
         }
 
-        this.app = app;
-        this.group = group.ToUpper();
+        _app = app;
+        _group = group.ToUpper();
     }
 
-    public App App => app;
-    public string Group => group;
-    public Dictionary<string, string>.KeyCollection Keys => kvp.Keys;
-    public abstract void Add(string key, string value, string debug = "");
+    public App App => _app;
+    public string Group => _group;
+    public Dictionary<string, string>.KeyCollection Keys => _kvp.Keys;
+    /// <summary>
+    /// Adds a key-value pair to the collection if the key does not already exist.
+    /// </summary>
+    /// <param name="key">The key associated with the value to add. Cannot be null or empty.</param>
+    /// <param name="value">The value to associate with the specified key. Cannot be null.</param>
+    /// <param name="debug">An optional debug string for logging or diagnostic purposes. Can be empty.</param>
+    /// <returns><see langword="true"/> if the key-value pair was successfully added; otherwise, <see langword="false"/> if the
+    /// key already exists or the operation fails.</returns>
+    public abstract bool Add(string key, string value, string debug = "");
 
-    protected void Add(string key, string value)
+    protected bool Add(string key, string value)
     {
-        kvp[key] = value;
+        if (!ContainsKey(key))
+        {
+            _kvp[key] = value;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public bool ContainsKey(string key)
     {
-        if (kvp == null || string.IsNullOrEmpty(key))
+        if (_kvp == null || string.IsNullOrEmpty(key))
         {
             return false;
         }
-        return kvp.ContainsKey(key);
+        return _kvp.ContainsKey(key);
     }
 
     public string? Value(string key)
     {
         if (ContainsKey(key))
         {
-            return kvp[key];
+            return _kvp[key];
         }
         else
         {

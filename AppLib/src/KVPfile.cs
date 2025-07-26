@@ -4,27 +4,27 @@ namespace CFG2.Utils.AppLib;
 
 public class KVPfile : KVP
 {
-    private readonly string file;
+    private readonly string _file;
 
     public KVPfile(App app, string group, string? file = null) : base(app, group)
     {
         if (string.IsNullOrEmpty(file))
         {
-            this.file = Path.Combine(App.DataDir, "kvp-"+Group+".txt");
-            App.Trace("KVPfile file param is empty, defaulting to: "+this.file);
+            _file = Path.Combine(App.DataDir, "kvp-"+Group+".txt");
+            App.Trace("KVPfile file param is empty, defaulting to: "+_file);
         }
         else
         {
-            this.file = file;
+            _file = file;
         }
 
-        if (!File.Exists(this.file))
+        if (!File.Exists(_file))
         {
-            App.Log("Creating " + Group + " kvp file: " + this.file);
-            File.Create(this.file).Close();
+            App.Log("Creating " + Group + " kvp file: " + _file);
+            File.Create(_file).Close();
         }
 
-        foreach (string line in File.ReadLines(this.file))
+        foreach (string line in File.ReadLines(_file))
         {
             if (!string.IsNullOrEmpty(line) && !line.StartsWith('#') && !line.StartsWith("--") && !line.StartsWith(@"//"))
             {
@@ -49,15 +49,20 @@ public class KVPfile : KVP
         }
     }
 
-    public override void Add(string key, string value, string debug = "")
+    public override bool Add(string key, string value, string debug = "")
     {
         if (ShouldAdd(key, value))
         {
             //App.Trace($"Adding kvp: {key}={value}");
             if (!string.IsNullOrEmpty(debug)) { App.Log(debug); }
-            File.AppendAllText(file, key+"="+value+"\n");
+            File.AppendAllText(_file, key+"="+value+"\n");
 
             Add(key, value);
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 }

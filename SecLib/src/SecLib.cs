@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Security.Cryptography;
+using CFG2.Utils.LogLib;
 
 namespace CFG2.Utils.SecLib;
 
@@ -66,7 +67,7 @@ public class SecLib
         }
         catch (IOException ex)
         {
-            Console.WriteLine($"Error storing data: {ex.Message}");
+            Logger.Trace($"Error storing data: {ex.Message}");
             return false;
         }
         catch (InvalidOperationException) // Propagated from Encrypt
@@ -110,7 +111,7 @@ public class SecLib
         }
         catch (IOException ex)
         {
-            Console.WriteLine($"Error retrieving data: {ex.Message}");
+            Logger.Trace($"Error retrieving data: {ex.Message}");
         }
         catch (InvalidOperationException) // Propagated from Decrypt
         {
@@ -148,8 +149,7 @@ public class SecLib
         }
         catch (CryptographicException ex)
         {
-            // Log the exception (e.g., using a logging framework)
-            Console.WriteLine($"Encryption error: {ex.Message}");
+            Logger.Trace($"Encryption error: {ex.Message}");
             throw new InvalidOperationException("Failed to encrypt data.", ex);
         }
     }
@@ -183,13 +183,13 @@ public class SecLib
         catch (CryptographicException ex)
         {
             // Log the exception
-            Console.WriteLine($"Decryption error: {ex.Message}");
+            Logger.Trace($"Decryption error: {ex.Message}");
             throw new InvalidOperationException("Failed to decrypt data. Data might be corrupted or encrypted by a different user/machine.", ex);
         }
         catch (FormatException ex)
         {
             // Log the exception if the input is not a valid Base64 string
-            Console.WriteLine($"Decryption error: Invalid Base64 string. {ex.Message}");
+            Logger.Trace($"Decryption error: Invalid Base64 string. {ex.Message}");
             throw new ArgumentException("Input string is not a valid Base64 format.", ex);
         }
     }

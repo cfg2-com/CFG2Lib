@@ -17,12 +17,13 @@ public class TestApp
 
         app.Log("Logging a message via the default logger provided by AppLib.");
 
+        TestSecurProp();
         //TestAppConfig();
         //TestMigrateAppConfig();
         //TestMigrateFile();
         //TestMigrateDeduper();
         //TestProperties();
-        TestAppMdpDeduper();
+        //TestAppMdpDeduper();
         //TestGlobalMdpDeduper();
         //TestGlobalFileDeduper();
         //TestSoftDelete();
@@ -33,6 +34,17 @@ public class TestApp
         app = new(null, false);
 
         app.Trace("Goodbye");
+    }
+
+    private static void TestSecurProp()
+    {
+        AppConfig appConfig = new AppConfig(app);
+        bool success = appConfig.AddPersistedProperty("testSecureProp", "This is a secure property", "Test secure property", true);
+        if (!success)
+        {
+            app.Trace("WARN: Did not add property, but likely because it already exists.");
+        }
+        app.Trace("Secure prop value: " + appConfig.GetProperty("testSecureProp", true));
     }
 
     private static void TestAppConfig()

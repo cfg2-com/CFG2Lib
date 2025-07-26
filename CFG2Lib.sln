@@ -16,6 +16,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteLib", "SQLiteLib\SQLiteLib.csproj", "{E64ACD13-CB5E-447F-BEA9-42488E73D7DB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecLib", "SecLib\SecLib.csproj", "{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C1C31B61-9142-4020-A0EC-68010635FCE7} = {C1C31B61-9142-4020-A0EC-68010635FCE7}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

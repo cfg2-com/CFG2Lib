@@ -1,15 +1,15 @@
-using System.ComponentModel;
+using CFG2.Utils.SecLib;
 
 namespace CFG2.Utils.AppLib;
 
 public class AppConfig
 {
-    private App app;
-    private string configFile;
-    private string mdpTable;
-    private KVP kvp;
-    private KVPmdp kvpMDP;
-    private KVP kvpFile;
+    private readonly App _app;
+    private readonly string _configFile;
+    private readonly string _mdpTable;
+    private KVP _kvp;
+    private KVPmdp _kvpMDP;
+    private KVP _kvpFile;
 
     /// <summary>
     /// Deduper constructor.
@@ -22,64 +22,97 @@ public class AppConfig
         if (string.IsNullOrEmpty(cfgFile)) { cfgFile = "app.cfg"; }
         if (string.IsNullOrEmpty(mdpTable)) { mdpTable = "APP_CONFIG"; }
 
-        this.app = app;
-        configFile = Path.Combine(app.Dir, cfgFile);
-        this.mdpTable = mdpTable;
+        _app = app;
+        _configFile = Path.Combine(app.Dir, cfgFile);
+        _mdpTable = mdpTable;
 
         Reload();
     }
 
     public void Reload()
     {
-        app.Log("Loading AppConfig");
-        kvp = new KVPmemory(app);
+        _app.Log("Loading AppConfig");
+        _kvp = new KVPmemory(_app);
 
-        kvpMDP = new KVPmdp(app, app.Name, mdpTable, "KEY_ID", "APP_C");
-        foreach (string key in kvpMDP.Keys)
+        _kvpMDP = new KVPmdp(_app, _app.Name, _mdpTable, "KEY_ID", "APP_C");
+        foreach (string key in _kvpMDP.Keys)
         {
-            kvp.Add(key, kvpMDP.Value(key));
+            _kvp.Add(key, _kvpMDP.Value(key));
         }
 
-        if (File.Exists(configFile))
+        if (File.Exists(_configFile))
         {
-            kvpFile = new KVPfile(app, app.Name, configFile);
-            foreach (string key in kvpFile.Keys)
+            _kvpFile = new KVPfile(_app, _app.Name, _configFile);
+            foreach (string key in _kvpFile.Keys)
             {
-                kvp.Add(key, kvpFile.Value(key));
+                _kvp.Add(key, _kvpFile.Value(key));
             }
         }
     }
 
     public bool ContainsProperty(string property)
     {
-        return kvp.ContainsKey(property);
+        return _kvp.ContainsKey(property);
     }
 
-    public void AddTempProperty(string property, string value, string debug = "")
+    /// <summary>
+    /// Adds a temporary property with the specified key and value to the collection if the property does NOT already exist.
+    /// </summary>
+    /// <param name="property">The key of the property to add. Cannot be null or empty.</param>
+    /// <param name="value">The value associated with the property key.</param>
+    /// <param name="debug">An optional debug string for additional context or logging purposes.</param>
+    /// <returns><see langword="true"/> if the property was successfully added; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentException">Thrown if <paramref name="property"/> is null or empty.</exception>
+    public bool AddTempProperty(string property, string value, string debug = "")
     {
         if (string.IsNullOrEmpty(property))
         {
             throw new ArgumentException("property can not be null");
         }
-        kvp.Add(property, value, debug);
+        return _kvp.Add(property, value, debug);
     }
 
-    public void AddPersistedProperty(string property, string value, string debug = "")
+    /// <summary>
+    /// Adds a property to the persisted key-value store if the property does NOT already exist and optionally encrypts its value.
+    /// </summary>
+    /// <remarks>This method adds the specified property to both the runtime key-value store and the persisted
+    /// store. If <paramref name="secure"/> is <see langword="true"/>, the value is encrypted before being
+    /// stored.</remarks>
+    /// <param name="property">The name of the property to add. Cannot be null or empty.</param>
+    /// <param name="value">The value of the property to add. If <paramref name="secure"/> is <see langword="true"/>, the value will be
+    /// encrypted before being stored.</param>
+    /// <param name="debug">An optional debug string for logging or tracking purposes. Can be null or empty.</param>
+    /// <param name="secure">A boolean indicating whether the value should be encrypted before being stored. <see langword="true"/> to
+    /// encrypt; otherwise, <see langword="false"/>.</param>
+    /// <returns><see langword="true"/> if the property was successfully added to the persisted store; otherwise, <see
+    /// langword="false"/>.</returns>
+    public bool AddPersistedProperty(string property, string value, string debug = "", bool secure = false)
     {
-        AddTempProperty(property, value, debug);
-        kvpMDP.Add(property, value, debug);
+        if (secure)
+        {
+            value = SecLib.SecLib.Encrypt(value);
+        }
+        AddTempProperty(property, value, debug); // Adds to runtime kvp
+        return _kvpMDP.Add(property, value, debug); // Save for next time
     }
 
-    public string GetProperty(string property)
+    public string GetProperty(string property, bool secure = false)
     {
-        string? value = kvp.Value(property);
+        string? value = _kvp.Value(property);
         if (value == null)
         {
             return "";
         }
         else
         {
-            return value;
+            if (secure)
+            {
+                return SecLib.SecLib.Decrypt(value);
+            }
+            else
+            {
+                return value;
+            }
         }
     }
 
@@ -89,7 +122,7 @@ public class AppConfig
     /// <returns></returns>
     public string GetFile()
     {
-        return configFile;
+        return _configFile;
     }
 
     /// <summary>
@@ -98,6 +131,6 @@ public class AppConfig
     /// <returns></returns>
     public string GetDB()
     {
-        return kvpMDP.GetFile();
+        return _kvpMDP.GetFile();
     }
 }
