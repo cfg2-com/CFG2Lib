@@ -7,6 +7,7 @@ public class AppConfig
     private readonly App _app;
     private readonly string _configFile;
     private readonly string _mdpTable;
+    private readonly string _encryptionPassword;
     private KVP _kvp;
     private KVPmdp _kvpMDP;
     private KVP _kvpFile;
@@ -17,7 +18,7 @@ public class AppConfig
     /// <param name="app">The app to for these configuration properties.</param>
     /// <param name="cfgFile">If a file with this name exists in the AppDir, it will be read.</param>
     /// <param name="mdpTable">This table will be read from MDP.db in the SyncDir.</param>
-    public AppConfig(App app, string? cfgFile = "app.cfg", string? mdpTable = "APP_CONFIG")
+    public AppConfig(App app, string? cfgFile = "app.cfg", string? mdpTable = "APP_CONFIG", string? encryptionPassword = null)
     {
         if (string.IsNullOrEmpty(cfgFile)) { cfgFile = "app.cfg"; }
         if (string.IsNullOrEmpty(mdpTable)) { mdpTable = "APP_CONFIG"; }
@@ -25,6 +26,7 @@ public class AppConfig
         _app = app;
         _configFile = Path.Combine(app.Dir, cfgFile);
         _mdpTable = mdpTable;
+        _encryptionPassword = encryptionPassword;
 
         Reload();
     }
@@ -90,8 +92,13 @@ public class AppConfig
     {
         if (secure)
         {
-            value = SecLib.SecLib.Encrypt(value);
+            if (_encryptionPassword == null)
+            {
+                throw new ArgumentException("encryptionPassword (set in the constructor) cannot be null when secure is true");
+            }
+            value = SecUtil.Encrypt(_encryptionPassword, value);
         }
+
         AddTempProperty(property, value, debug); // Adds to runtime kvp
         return _kvpMDP.Add(property, value, debug); // Save for next time
     }
@@ -107,12 +114,14 @@ public class AppConfig
         {
             if (secure)
             {
-                return SecLib.SecLib.Decrypt(value);
+                if (_encryptionPassword == null)
+                {
+                    throw new ArgumentException("encryptionPassword (set in the constructor) cannot be null when secure is true");
+                }
+                value = SecUtil.Decrypt(_encryptionPassword, value);
             }
-            else
-            {
-                return value;
-            }
+
+            return value;
         }
     }
 

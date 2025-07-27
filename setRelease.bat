@@ -6,8 +6,8 @@ SET LOG_LIB_VER=1.0.1
 
 REM LogLib Internal Dependencies
 SET HTTP_LIB_VER=1.0.1
-SET SEC_LIB_VER=1.0.0
+SET SEC_LIB_VER=1.0.1
 SET SQLITE_LIB_VER=1.0.3
 
 REM Multiple Internal Dependencies
-SET APP_LIB_VER=1.0.13
+SET APP_LIB_VER=1.0.14
