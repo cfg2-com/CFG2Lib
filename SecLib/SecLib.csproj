@@ -4,9 +4,9 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>CFG2.AppLib</AssemblyName>
+    <AssemblyName>CFG2.SecLib</AssemblyName>
     <RepositoryUrl>https://github.com/cfg2-com/CFG2Lib</RepositoryUrl>
-    <Version>$(APP_LIB_VER)</Version>
+    <Version>$(SEC_LIB_VER)</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -15,22 +15,21 @@
 
   <ItemGroup Condition="'$(UseProjectReferences)' == 'true'">
     <!-- Use local library versions when developing -->
-    <ProjectReference Include="..\SysLib\SysLib.csproj" />
     <ProjectReference Include="..\LogLib\LogLib.csproj" />
-    <ProjectReference Include="..\SecLib\SecLib.csproj" />
-    <ProjectReference Include="..\SQLiteLib\SQLiteLib.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseProjectReferences)' != 'true'">
     <!-- Use published versions when packaging -->
-    <PackageReference Include="CFG2.SysLib" Version="[$(SYS_LIB_VER),)" />
     <PackageReference Include="CFG2.LogLib" Version="[$(LOG_LIB_VER),)" />
-    <PackageReference Include="CFG2.SecLib" Version="[$(SEC_LIB_VER),)" />
-    <PackageReference Include="CFG2.SQLiteLib" Version="[$(SQLITE_LIB_VER),)" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\"/>
+    <!-- Other dependencies -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

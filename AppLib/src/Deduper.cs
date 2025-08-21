@@ -2,13 +2,13 @@ namespace CFG2.Utils.AppLib;
 
 public class Deduper
 {
-    private App app;
-    private string name;
-    private bool global;
-    private bool useMDP;
-    private string file;
-    private string mdpFile;
-    private KVP kvp;
+    private App _app;
+    private string _name;
+    private bool _global;
+    private bool _useMDP;
+    private string _file;
+    private string _mdpFile;
+    private KVP _kvp;
 
     /// <summary>
     /// Deduper constructor.
@@ -19,49 +19,49 @@ public class Deduper
     /// <param name="useMDP">If true, will use the MDP.db SQLite db at the app SyncDir. If false, will write to file either in the AppDataDir or BackupDir depending on value of "global"</param>
     public Deduper(App app, string name, bool global = false, bool useMDP = true)
     {
-        this.app = app;
-        this.name = name;
-        this.global = global;
-        this.useMDP = useMDP;
+        _app = app;
+        _name = name;
+        _global = global;
+        _useMDP = useMDP;
 
         Reload();
     }
 
-    public bool UseMDP => useMDP;
+    public bool UseMDP => _useMDP;
 
     public void Reload()
     {
-        string group = app.Name+" - "+name;
-        if (global)
+        string group = _app.Name+" - "+_name;
+        if (_global)
         {
-            group = "GLOBAL - "+name;
+            group = "GLOBAL - "+_name;
         }
 
-        if (useMDP)
+        if (_useMDP)
         {
-            kvp = new KVPmdp(app, group, "DEDUPER");
-            mdpFile = app.GetMDP().File;
+            _kvp = new KVPmdp(_app, group, "DEDUPER");
+            _mdpFile = _app.GetMDP().File;
         }
         else
         {
-            string dir = app.DataDir;
-            if (global)
+            string dir = _app.DataDir;
+            if (_global)
             {
-                dir = app.BackupDir;
+                dir = _app.BackupDir;
             }
-            file = Path.Combine(dir, $"dedup-{name.ToUpper()}.txt");
-            kvp = new KVPfile(app, group, file);
+            _file = Path.Combine(dir, $"dedup-{_name.ToUpper()}.txt");
+            _kvp = new KVPfile(_app, group, _file);
         }
     }
 
     public bool ContainsKey(string key)
     {
-        return kvp.ContainsKey(key);
+        return _kvp.ContainsKey(key);
     }
 
     public void AddItem(string key, string debug)
     {
-        kvp.Add(key, key, debug);
+        _kvp.Add(key, key, debug);
     }
     
     /// <summary>
@@ -70,13 +70,13 @@ public class Deduper
     /// <returns></returns>
     public string GetFile()
     {
-        if (useMDP)
+        if (_useMDP)
         {
-            return mdpFile;
+            return _mdpFile;
         }
         else
         {
-            return file;
+            return _file;
         }
     }
 }

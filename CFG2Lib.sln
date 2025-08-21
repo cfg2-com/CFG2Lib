@@ -15,6 +15,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpLib", "HttpLib\HttpLib.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteLib", "SQLiteLib\SQLiteLib.csproj", "{E64ACD13-CB5E-447F-BEA9-42488E73D7DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecLib", "SecLib\SecLib.csproj", "{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C1C31B61-9142-4020-A0EC-68010635FCE7} = {C1C31B61-9142-4020-A0EC-68010635FCE7}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,8 +102,23 @@ Global
 		{E64ACD13-CB5E-447F-BEA9-42488E73D7DB}.Release|x64.Build.0 = Release|Any CPU
 		{E64ACD13-CB5E-447F-BEA9-42488E73D7DB}.Release|x86.ActiveCfg = Release|Any CPU
 		{E64ACD13-CB5E-447F-BEA9-42488E73D7DB}.Release|x86.Build.0 = Release|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Debug|x64.Build.0 = Debug|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Debug|x86.Build.0 = Debug|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Release|x64.ActiveCfg = Release|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Release|x64.Build.0 = Release|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Release|x86.ActiveCfg = Release|Any CPU
+		{AEB7DDBD-C61B-4B82-B043-A8E0729B2286}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {92CAE242-513C-4753-8E23-E960A32F7F9F}
 	EndGlobalSection
 EndGlobal

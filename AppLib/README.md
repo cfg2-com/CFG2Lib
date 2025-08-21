@@ -48,6 +48,12 @@ public class TestApp
 
 ## Release Notes
 
+### 1.0.14
+- Improved support for secure/encrypted app config properties.
+
+### 1.0.13
+- Added support for secure/encrypted app config properties.
+
 ### 1.0.10
 - Bug fix for named app
 - Bug fix for MDP Deduper

@@ -7,40 +7,40 @@ using CFG2.Utils.SQLiteLib;
 
 public class App
 {
-    private static Logger logger;
-    private readonly string configRootDir;
-    private readonly string appName;
-    private readonly string baseDir;
-    private readonly int retentionDays;
-    private SQLiteUtil mdp;
+    private static Logger _logger;
+    private readonly string _configRootDir;
+    private readonly string _appName;
+    private readonly string _baseDir;
+    private readonly int _retentionDays;
+    private SQLiteUtil _mdp;
 
 
     public App(string? appName = null, bool configInSyncDir = true, string? baseDir = null, int retentionDays = 30)
     {
-        this.retentionDays = retentionDays;
+        _retentionDays = retentionDays;
 
         // Make sure we have an AppName
         if (string.IsNullOrEmpty(appName))
         {
-            this.appName = Process.GetCurrentProcess().ProcessName;
-            Logger.Trace("Using Process.GetCurrentProcess().ProcessName for appName: " + this.appName);
+            _appName = Process.GetCurrentProcess().ProcessName;
+            Logger.Trace("Using Process.GetCurrentProcess().ProcessName for appName: " + _appName);
         }
         else
         {
             Logger.Trace("Using provided appName: " + appName);
-            this.appName = appName;
+            _appName = appName;
         }
 
         // Make sure we have a baseDir
         if (string.IsNullOrEmpty(baseDir))
         {
             Logger.Trace("Using default baseDir: CFG2");
-            this.baseDir = "CFG2";
+            _baseDir = "CFG2";
         }
         else
         {
             Logger.Trace("Using provided baseDir: " + baseDir);
-            this.baseDir = baseDir;
+            _baseDir = baseDir;
         }
 
         // Intentionally calling this here because expected for all apps regardless of configInSyncDir setting.
@@ -57,23 +57,23 @@ public class App
                 Logger.Trace("Creating: " + dir);
                 Directory.CreateDirectory(dir);
             }
-            this.configRootDir = Path.Combine(dir, this.baseDir);
+            _configRootDir = Path.Combine(dir, _baseDir);
         }
         else
         {
-            this.configRootDir = Path.Combine(SysLib.GetSpecialFolder(SpecialFolder.AppData), this.baseDir);
+            _configRootDir = Path.Combine(SysLib.GetSpecialFolder(SpecialFolder.AppData), _baseDir);
         }
-        Logger.Trace("ConfigRootDir: " + this.configRootDir);
-        if (!Directory.Exists(this.configRootDir))
+        Logger.Trace("ConfigRootDir: " + _configRootDir);
+        if (!Directory.Exists(_configRootDir))
         {
-            Directory.CreateDirectory(this.configRootDir);
+            Directory.CreateDirectory(_configRootDir);
         }
 
         // Get (and create if necessary) the app directory: {configRootDir}/{appName}.
         // While at the same time initializing the logger instance.
-        logger = Logger.Instance(GetAppDir());
+        _logger = Logger.Instance(GetAppDir());
 
-        CleanupSoftDeleteDirectory(this.retentionDays);
+        CleanupSoftDeleteDirectory(_retentionDays);
     }
 
     public string Name => GetAppName();
@@ -84,18 +84,18 @@ public class App
     public string BackupDir => GetAppBackupDir();
     public string BackupBaseDir => GetBackupBaseDir();
     public string BackupRootDir => GetBackupRootDir();
-    public string LogFile => logger.GetFile();
+    public string LogFile => _logger.GetFile();
     public string SyncDir => GetSyncDir();
     public string InboxDir => GetInboxDir();
 
     private string GetAppName()
     {
-        return appName;
+        return _appName;
     }
 
     private string GetAppDir()
     {
-        string dir = Path.Combine(this.configRootDir, this.appName);
+        string dir = Path.Combine(_configRootDir, _appName);
         if (!Directory.Exists(dir)) {
             Logger.Trace("Creating AppDir: " + dir);
             Directory.CreateDirectory(dir);
@@ -129,7 +129,7 @@ public class App
     /// <returns>[syncDir]/Backup/[baseDir]/[appName]</returns>
     private string GetAppBackupDir()
     {
-        string dir = Path.Combine(GetBackupBaseDir(), appName);
+        string dir = Path.Combine(GetBackupBaseDir(), _appName);
         if (!Directory.Exists(dir)) {
             Logger.Trace("Creating AppBackupDir: " + dir);
             Directory.CreateDirectory(dir);
@@ -160,7 +160,7 @@ public class App
         string syncHome;
         if (!SysLib.EnvVarExists("SYNC_DRIVE_HOME"))
         {
-            syncHome = Path.Combine(SysLib.GetSpecialFolder(SpecialFolder.AppData), this.baseDir);
+            syncHome = Path.Combine(SysLib.GetSpecialFolder(SpecialFolder.AppData), _baseDir);
             if (!Directory.Exists(syncHome))
             {
                 Logger.Trace("Creating: " + syncHome);
@@ -204,7 +204,7 @@ public class App
 
     private string GetBackupBaseDir()
     {
-        string dir = Path.Combine(GetBackupRootDir(), this.baseDir);
+        string dir = Path.Combine(GetBackupRootDir(), _baseDir);
         if (!Directory.Exists(dir)) {
             Logger.Trace("Creating BackupBaseDir: " + dir);
             Directory.CreateDirectory(dir);
@@ -219,28 +219,28 @@ public class App
 
     public void Log(string msg)
     {
-        logger.Log(msg);
+        _logger.Log(msg);
     }
 
     public void Warn(string msg)
     {
-        logger.Warn(msg);
+        _logger.Warn(msg);
     }
 
     public void Error(string msg)
     {
-        logger.Error(msg);
+        _logger.Error(msg);
     }
 
     public SQLiteUtil GetMDP()
     {
-        if (this.mdp == null)
+        if (_mdp == null)
         {
             string mdpFile = Path.Combine(this.SyncDir, "MDP.db");
-            this.mdp = new SQLiteUtil(mdpFile);
+            _mdp = new SQLiteUtil(mdpFile);
         }
 
-        return this.mdp;
+        return _mdp;
     }
 
     public bool SoftDeleteFile(string fullpath)
@@ -251,7 +251,7 @@ public class App
             string deleteDir = GetAppSoftDeleteDir();
             try
             {
-                logger.Log("Soft Deleting: " + fullpath);
+                _logger.Log("Soft Deleting: " + fullpath);
                 string dstFile = Path.Combine(deleteDir, Path.GetFileName(fullpath));
                 int count = 0;
                 string fileWoExt = Path.GetFileNameWithoutExtension(fullpath);
@@ -264,14 +264,14 @@ public class App
                 File.Copy(fullpath, dstFile, true); // Using copy then delete because sometimes "Move" is weird when dealing with cloud drives
                 if (!File.Exists(dstFile))
                 {
-                    logger.Error("Failed copying " + fullpath + " to " + dstFile);
+                    _logger.Error("Failed copying " + fullpath + " to " + dstFile);
                 }
                 else
                 {
                     File.Delete(fullpath); // Delete the original file
                     if (File.Exists(fullpath))
                     {
-                        logger.Error("Failed deleting " + fullpath);
+                        _logger.Error("Failed deleting " + fullpath);
                     }
                     else
                     {
@@ -281,12 +281,12 @@ public class App
             }
             catch (Exception e)
             {
-                logger.Error("Trying to delete: " + fullpath + " : " + e.Message);
+                _logger.Error("Trying to delete: " + fullpath + " : " + e.Message);
             }
         }
         else
         {
-            logger.Warn("File does not exist to Delete: " + fullpath);
+            _logger.Warn("File does not exist to Delete: " + fullpath);
             success = true; // If the source file doesn't exist, we consider it a success
         }
 
@@ -301,7 +301,7 @@ public class App
             string[] files = Directory.GetFiles(deleteDir);
             foreach (string file in files) {
                 if (File.GetLastWriteTime(file).CompareTo(RetentionThreshold) < 0) {
-                    logger.Log("Deleting: "+file);
+                    _logger.Log("Deleting: "+file);
                     File.Delete(file);
                 }
             }

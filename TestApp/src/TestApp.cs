@@ -2,6 +2,7 @@
 
 using CFG2.Utils.AppLib;
 using CFG2.Utils.HttpLib;
+using CFG2.Utils.SecLib;
 using CFG2.Utils.SQLiteLib;
 
 public class TestApp
@@ -17,12 +18,14 @@ public class TestApp
 
         app.Log("Logging a message via the default logger provided by AppLib.");
 
+        //TestSecUtil();
+        TestSecurProp();
         //TestAppConfig();
         //TestMigrateAppConfig();
         //TestMigrateFile();
         //TestMigrateDeduper();
         //TestProperties();
-        TestAppMdpDeduper();
+        //TestAppMdpDeduper();
         //TestGlobalMdpDeduper();
         //TestGlobalFileDeduper();
         //TestSoftDelete();
@@ -33,6 +36,28 @@ public class TestApp
         app = new(null, false);
 
         app.Trace("Goodbye");
+    }
+
+    private static void TestSecUtil()
+    {
+        string password = "This is a test password";
+        string originalValue = "This is a test value";
+        string encryptedValue = SecUtil.Encrypt(password, "This is a test value");
+        app.Trace("Encrypted Value: " + encryptedValue);
+        string decryptedValue = SecUtil.Decrypt(password, encryptedValue);
+        app.Trace("Decrypted Value: " + decryptedValue);
+        app.Trace($"Success: {originalValue == decryptedValue}");
+    }
+
+    private static void TestSecurProp()
+    {
+        AppConfig appConfig = new AppConfig(app, null, null, "thisIsMyTestPassword");
+        bool success = appConfig.AddPersistedProperty("testSecureProp", "This is a secure property", "Test secure property", true);
+        if (!success)
+        {
+            app.Trace("WARN: Did not add property, but likely because it already exists.");
+        }
+        app.Trace("Secure prop value: " + appConfig.GetProperty("testSecureProp", true));
     }
 
     private static void TestAppConfig()

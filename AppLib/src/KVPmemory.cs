@@ -4,7 +4,7 @@ namespace CFG2.Utils.AppLib;
 
 public class KVPmemory(App app) : KVP(app, "MEMORY")
 {
-    public override void Add(string key, string value, string debug = "")
+    public override bool Add(string key, string value, string debug = "")
     {
         if (ShouldAdd(key, value))
         {
@@ -12,6 +12,11 @@ public class KVPmemory(App app) : KVP(app, "MEMORY")
             if (!string.IsNullOrEmpty(debug)) { App.Log(debug); }
 
             Add(key, value);
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 }
