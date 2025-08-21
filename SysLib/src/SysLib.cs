@@ -76,17 +76,34 @@ public class SysLib
 
         return inUse;
     }
+    
+    public static void PrependTextToFile(string file, string text)
+    {
+        if (string.IsNullOrEmpty(file)) {
+            throw new ArgumentException("File path cannot be null or empty.", nameof(file));
+        }
+        if (string.IsNullOrEmpty(text)) {
+            throw new ArgumentException("Text to prepend cannot be null or empty.", nameof(text));
+        }
+
+        string content = File.ReadAllText(file);
+        File.WriteAllText(file, text + Environment.NewLine + content);
+    }
 
     public static string GetSpecialFolder(SpecialFolder specialFolder)
     {
         string ret;
-        if (specialFolder == SpecialFolder.AppData) {
+        if (specialFolder == SpecialFolder.AppData)
+        {
             ret = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        } else {
+        }
+        else
+        {
             ret = SHGetKnownFolderPath(_guids[specialFolder], 0);
         }
 
-        if ((ret == null) || !Directory.Exists(ret)) {
+        if ((ret == null) || !Directory.Exists(ret))
+        {
             throw new Exception("Failed to get special folder: " + specialFolder);
         }
 
