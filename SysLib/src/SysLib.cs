@@ -76,18 +76,56 @@ public class SysLib
 
         return inUse;
     }
-    
+
     public static void PrependTextToFile(string file, string text)
     {
-        if (string.IsNullOrEmpty(file)) {
+        if (string.IsNullOrEmpty(file))
+        {
             throw new ArgumentException("File path cannot be null or empty.", nameof(file));
         }
-        if (string.IsNullOrEmpty(text)) {
+        if (string.IsNullOrEmpty(text))
+        {
             throw new ArgumentException("Text to prepend cannot be null or empty.", nameof(text));
         }
 
         string content = File.ReadAllText(file);
         File.WriteAllText(file, text + Environment.NewLine + content);
+    }
+    
+    /// <summary>
+    /// Cleans a string to be safe for use as a file name. Do NOT send full path or extension.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    public static string GetFileNameSafeString(string str)
+    {
+        if (!string.IsNullOrEmpty(str))
+        {
+            if (str.StartsWith("Fwd: "))
+            {
+                str = str.Substring(5);
+            }
+            if (str.StartsWith("Re: "))
+            {
+                str = str.Substring(4);
+            }
+            if (str.StartsWith("RE: "))
+            {
+                str = str.Substring(4);
+            }
+            str = str.Replace("#", "")
+                    .Replace("’", "")
+                    .Replace("&", "and")
+                    .Replace("/", "-")
+                    .Replace("\\", "-")
+                    .Replace("?", "")
+                    .Replace(":", "")
+                    .Replace(";", "")
+                    .Replace("*", "")
+                    .Replace("!", "")
+                    .Trim();
+        }
+        return str;
     }
 
     public static string GetSpecialFolder(SpecialFolder specialFolder)

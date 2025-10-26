@@ -6,5 +6,8 @@ Nothing in here is rocket science, but if it saves you from writing any boiler p
 
 ## Release Notes
 
+### 1.0.5
+- Added GetFileNameSafeString
+
 ### 1.0.1
 - Initial release
