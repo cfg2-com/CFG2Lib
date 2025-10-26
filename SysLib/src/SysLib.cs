@@ -96,22 +96,29 @@ public class SysLib
     /// Cleans a string to be safe for use as a file name. Do NOT send full path or extension.
     /// </summary>
     /// <param name="str"></param>
+    /// <param name="removeEmailPrefixes">If true, removes common email prefixes like "Fwd: " and "Re: "</param>
     /// <returns></returns>
-    public static string GetFileNameSafeString(string str)
+    public static string GetFileNameSafeString(string str, bool removeEmailPrefixes = true)
     {
         if (!string.IsNullOrEmpty(str))
         {
-            if (str.StartsWith("Fwd: "))
+            if (removeEmailPrefixes)
             {
-                str = str.Substring(5);
-            }
-            if (str.StartsWith("Re: "))
-            {
-                str = str.Substring(4);
-            }
-            if (str.StartsWith("RE: "))
-            {
-                str = str.Substring(4);
+                bool continueLoop = true;
+                while (continueLoop)
+                {
+                    continueLoop = false;
+                    if (str.ToLower().StartsWith("fwd: "))
+                    {
+                        str = str.Substring(5);
+                        continueLoop = true;
+                    }
+                    if (str.ToLower().StartsWith("re: "))
+                    {
+                        str = str.Substring(4);
+                        continueLoop = true;
+                    }
+                }
             }
             str = str.Replace("#", "")
                     .Replace("’", "")
@@ -123,6 +130,10 @@ public class SysLib
                     .Replace(";", "")
                     .Replace("*", "")
                     .Replace("!", "")
+                    .Replace(">", "")
+                    .Replace("<", "")
+                    .Replace("|", "-")
+                    .Replace("\"", "")
                     .Trim();
         }
         return str;

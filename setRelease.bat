@@ -1,7 +1,7 @@
 @echo off
 
 REM No Internal Dependencies
-SET SYS_LIB_VER=1.0.5
+SET SYS_LIB_VER=1.0.6
 SET LOG_LIB_VER=1.0.1
 
 REM LogLib Internal Dependencies
