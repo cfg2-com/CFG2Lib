@@ -48,6 +48,10 @@ public class TestApp
 
 ## Release Notes
 
+### 1.0.16
+- Added TempLocalDir
+- Added TempDir
+
 ### 1.0.15
 - SoftDeleteFile logging improvements
 

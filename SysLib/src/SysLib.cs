@@ -91,7 +91,7 @@ public class SysLib
         string content = File.ReadAllText(file);
         File.WriteAllText(file, text + Environment.NewLine + content);
     }
-    
+
     /// <summary>
     /// Cleans a string to be safe for use as a file name. Do NOT send full path or extension.
     /// </summary>
@@ -139,12 +139,88 @@ public class SysLib
         return str;
     }
 
+    /// <summary>
+    /// Returns true if the file content is different than the provided string content. 
+    /// Does this by writing the string to a temp file and comparing to try and get around encoding/lineending issues.
+    /// </summary>
+    /// <param name="file"></param>
+    /// <param name="content"></param>
+    /// <returns></returns>
+    /// <exception cref="FileNotFoundException"></exception>
+    public static bool IsFileDifferentThanString(string file, string content)
+    {
+        if (!File.Exists(file))
+        {
+            throw new FileNotFoundException("File does not exist.", file);
+        }
+
+        string tempFile = Path.GetTempFileName();
+        System.Text.Encoding encoding;
+        using (var reader = new StreamReader(file, detectEncodingFromByteOrderMarks: true))
+        {
+            // Force detection of encoding by reading at least one character (Peek will not consume)
+            if (reader.Peek() >= 0)
+            {
+                // no-op, just ensuring encoding detection
+            }
+            encoding = reader.CurrentEncoding;
+        }
+    
+        File.WriteAllText(tempFile, content, encoding);
+    
+        return IsFileDifferent(file, tempFile);
+    }
+    
+    public static bool IsFileDifferent(string file1, string file2)
+    {
+        if (!File.Exists(file1) || !File.Exists(file2))
+        {
+            throw new FileNotFoundException("One or both files do not exist.");
+        }
+
+        FileInfo fi1 = new(file1);
+        FileInfo fi2 = new(file2);
+
+        if (fi1.Length != fi2.Length)
+        {
+            return true;
+        }
+
+        const int bufferSize = 1024 * 1024; // 1MB buffer
+        byte[] buffer1 = new byte[bufferSize];
+        byte[] buffer2 = new byte[bufferSize];
+
+        using (FileStream fs1 = fi1.OpenRead())
+        using (FileStream fs2 = fi2.OpenRead())
+        {
+            int bytesRead1;
+            int bytesRead2;
+
+            do
+            {
+                bytesRead1 = fs1.Read(buffer1, 0, bufferSize);
+                bytesRead2 = fs2.Read(buffer2, 0, bufferSize);
+
+                if (bytesRead1 != bytesRead2 || !buffer1.Take(bytesRead1).SequenceEqual(buffer2.Take(bytesRead2)))
+                {
+                    return true;
+                }
+            } while (bytesRead1 > 0);
+        }
+
+        return false;
+    }
+
     public static string GetSpecialFolder(SpecialFolder specialFolder)
     {
         string ret;
         if (specialFolder == SpecialFolder.AppData)
         {
             ret = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        }
+        else if (specialFolder == SpecialFolder.Temp)
+        {
+            ret = Path.GetTempPath();
         }
         else
         {

@@ -8,5 +8,6 @@ public enum SpecialFolder
     Favorites,
     Links,
     SavedGames,
-    SavedSearches
+    SavedSearches,
+    Temp
 }

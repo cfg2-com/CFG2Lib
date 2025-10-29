@@ -6,6 +6,11 @@ Nothing in here is rocket science, but if it saves you from writing any boiler p
 
 ## Release Notes
 
+### 1.0.7
+- Added SpecialFolder.Temp
+- Added IsFileDifferent(file1, file2)
+- Added IsFileDifferentThanString(file, content)
+
 ### 1.0.6
 - Added GetFileNameSafeString
 

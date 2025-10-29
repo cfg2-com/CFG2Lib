@@ -87,6 +87,8 @@ public class App
     public string LogFile => _logger.GetFile();
     public string SyncDir => GetSyncDir();
     public string InboxDir => GetInboxDir();
+    public string TempDir => GetTempDir();
+    public string TempLocalDir => SysLib.GetSpecialFolder(SpecialFolder.Temp);
 
     private string GetAppName()
     {
@@ -180,6 +182,16 @@ public class App
             throw new Exception("SyncDir does not exist: " + syncHome);
         }
         return syncHome;
+    }
+
+    private string GetTempDir()
+    {
+        string dir = Path.Combine(GetSyncDir(), "Temp");
+        if (!Directory.Exists(dir)) {
+            Logger.Trace("Creating TempDir: " + dir);
+            Directory.CreateDirectory(dir);
+        }
+        return dir;
     }
 
     private string GetInboxDir()
