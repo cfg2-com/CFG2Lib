@@ -165,10 +165,12 @@ public class SysLib
             }
             encoding = reader.CurrentEncoding;
         }
-    
+
         File.WriteAllText(tempFile, content, encoding);
-    
-        return IsFileDifferent(file, tempFile);
+        bool result = IsFileDifferent(file, tempFile);
+        File.Delete(tempFile);
+
+        return result;
     }
     
     public static bool IsFileDifferent(string file1, string file2)
