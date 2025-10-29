@@ -48,6 +48,9 @@ public class TestApp
 
 ## Release Notes
 
+### 1.0.15
+- SoftDeleteFile logging improvements
+
 ### 1.0.14
 - Improved support for secure/encrypted app config properties.
 

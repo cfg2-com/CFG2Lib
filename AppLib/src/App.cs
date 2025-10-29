@@ -251,7 +251,7 @@ public class App
             string deleteDir = GetAppSoftDeleteDir();
             try
             {
-                _logger.Log("Soft Deleting: " + fullpath);
+                _logger.Log("Soft deleting: " + fullpath);
                 string dstFile = Path.Combine(deleteDir, Path.GetFileName(fullpath));
                 int count = 0;
                 string fileWoExt = Path.GetFileNameWithoutExtension(fullpath);
@@ -264,29 +264,30 @@ public class App
                 File.Copy(fullpath, dstFile, true); // Using copy then delete because sometimes "Move" is weird when dealing with cloud drives
                 if (!File.Exists(dstFile))
                 {
-                    _logger.Error("Failed copying " + fullpath + " to " + dstFile);
+                    _logger.Error("Soft delete failed copying " + fullpath + " to " + dstFile);
                 }
                 else
                 {
                     File.Delete(fullpath); // Delete the original file
                     if (File.Exists(fullpath))
                     {
-                        _logger.Error("Failed deleting " + fullpath);
+                        _logger.Error("Soft delete file still exists: " + fullpath);
                     }
                     else
                     {
+                        _logger.Log("Soft deleted to: " + dstFile);
                         success = true;
                     }
                 }
             }
             catch (Exception e)
             {
-                _logger.Error("Trying to delete: " + fullpath + " : " + e.Message);
+                _logger.Error("Trying to soft delete: " + fullpath + " : " + e.Message);
             }
         }
         else
         {
-            _logger.Warn("File does not exist to Delete: " + fullpath);
+            _logger.Warn("File does not exist to soft delete: " + fullpath);
             success = true; // If the source file doesn't exist, we consider it a success
         }
 
