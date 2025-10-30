@@ -3,7 +3,7 @@
 An opinionated application configuration library. Those opinions include, but are not limited to:
 
 - An app config lib should be *simple* to configure (just ```dotnet add package CFG2.AppLib```)
-- An app config lib should be *simple* to use (see example)
+- An app config lib should be *simple* to use (see example, but simply ```App app = new();```)
 - An app config lib should default as much as possible (see opinions above)
 
 Some ways AppLib attempts to be easy to use include:
@@ -47,6 +47,9 @@ public class TestApp
 ```
 
 ## Release Notes
+
+### 1.0.17
+- Added TempFile
 
 ### 1.0.16
 - Added TempLocalDir
