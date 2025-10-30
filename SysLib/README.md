@@ -6,6 +6,9 @@ Nothing in here is rocket science, but if it saves you from writing any boiler p
 
 ## Release Notes
 
+### 1.0.9
+- Output info about file diffs
+
 ### 1.0.8
 - Cleanup
 

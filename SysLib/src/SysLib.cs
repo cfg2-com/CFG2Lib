@@ -143,10 +143,10 @@ public class SysLib
     /// Returns true if the file content is different than the provided string content. 
     /// Does this by writing the string to a temp file and comparing to try and get around encoding/lineending issues.
     /// </summary>
-    /// <param name="file"></param>
-    /// <param name="content"></param>
+    /// <param name="file">File who's content to compare.</param>
+    /// <param name="content">String content to compare against file content.</param>
     /// <returns></returns>
-    /// <exception cref="FileNotFoundException"></exception>
+    /// <exception cref="FileNotFoundException">If the file does not exist.</exception>
     public static bool IsFileDifferentThanString(string file, string content)
     {
         if (!File.Exists(file))
@@ -172,7 +172,14 @@ public class SysLib
 
         return result;
     }
-    
+
+    /// <summary>
+    /// Returns true if the two files are different.
+    /// </summary>
+    /// <param name="file1"></param>
+    /// <param name="file2"></param>
+    /// <returns></returns>
+    /// <exception cref="FileNotFoundException">If either file does not exist.</exception>
     public static bool IsFileDifferent(string file1, string file2)
     {
         if (!File.Exists(file1) || !File.Exists(file2))
@@ -185,9 +192,11 @@ public class SysLib
 
         if (fi1.Length != fi2.Length)
         {
+            Console.WriteLine("File sizes differ: " + fi1.Length + " vs " + fi2.Length);
             return true;
         }
 
+        int bufferBlock = 0;
         const int bufferSize = 1024 * 1024; // 1MB buffer
         byte[] buffer1 = new byte[bufferSize];
         byte[] buffer2 = new byte[bufferSize];
@@ -200,11 +209,17 @@ public class SysLib
 
             do
             {
+                bufferBlock++;
                 bytesRead1 = fs1.Read(buffer1, 0, bufferSize);
                 bytesRead2 = fs2.Read(buffer2, 0, bufferSize);
 
                 if (bytesRead1 != bytesRead2 || !buffer1.Take(bytesRead1).SequenceEqual(buffer2.Take(bytesRead2)))
                 {
+                    Console.WriteLine($"Files differ at block ({bufferSize} bytes): {bufferBlock}");
+                    Console.WriteLine($"----- {file1} block -----");
+                    Console.WriteLine(BitConverter.ToString(buffer1, 0, bytesRead1));
+                    Console.WriteLine($"----- {file2} block -----");
+                    Console.WriteLine(BitConverter.ToString(buffer2, 0, bytesRead2));
                     return true;
                 }
             } while (bytesRead1 > 0);
