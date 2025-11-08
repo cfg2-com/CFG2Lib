@@ -13,10 +13,12 @@ public sealed class Logger {
     private readonly string _logDir = "";
     private readonly string _logFile = "";
 
-    private Logger(string dir, string filename, int retentionDays = 30) {
+    private Logger(string dir, string filename, int retentionDays = 30)
+    {
         _logDir = dir;
 
-        if (!Directory.Exists(_logDir)) {
+        if (!Directory.Exists(_logDir))
+        {
             Trace("Log directory does not exist, creating: " + _logDir);
             Directory.CreateDirectory(_logDir);
         }
@@ -31,10 +33,11 @@ public sealed class Logger {
     /// Returns a singleton instance of Logger for the specified application
     /// </summary>
     /// <param name="appDir">Base directory of the application. Logs will be created within a "Logs" directory under this path. If the path does not exist an Exception will be thrown.</param>
+    /// <param name="retentionDays">Number of days to retain log entries. Entries older than this will be removed when the Logger is instantiated. Default is 30 days.</param>
     /// <param name="appName">If null is provided this will default to whatever is returned by Process.GetCurrentProcess().ProcessName</param>
     /// <param name="filename">If null the Logger will log to {appDir}/Logs/{appName}.log</param>
     /// <returns></returns>
-    public static Logger Instance(string appDir, string? appName = null, string? filename = null)
+    public static Logger Instance(string appDir, int retentionDays = 30, string? appName = null, string? filename = null)
     {
         if (!Directory.Exists(appDir)){
             throw new DirectoryNotFoundException("The specified application directory does not exist: " + appDir);
@@ -53,7 +56,7 @@ public sealed class Logger {
             if (!_instances.ContainsKey(filename))
             {
                 string logDir = Path.Combine(appDir, "Logs");
-                _instances.Add(filename, new Logger(logDir, filename));
+                _instances.Add(filename, new Logger(logDir, filename, retentionDays));
             }
             return _instances[filename];
         }

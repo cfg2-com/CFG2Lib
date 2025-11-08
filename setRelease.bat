@@ -4,7 +4,7 @@ REM *** Update README.md with changes before release ***
 
 REM No Internal Dependencies
 SET SYS_LIB_VER=1.0.9
-SET LOG_LIB_VER=1.0.2
+SET LOG_LIB_VER=1.0.3
 
 REM LogLib Internal Dependencies
 SET HTTP_LIB_VER=1.0.1

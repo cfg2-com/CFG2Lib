@@ -8,7 +8,21 @@ An opinionated logger. Those opinions include, but are not limited to:
 
 ### Usage Examples
 
-*Recommended* Usage
+*Recommended* Usage (With AppLib)
+```
+using CFG2.Utils.AppLib;
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        App = new App();
+        App.Log("Hello");
+    }
+}
+```
+
+Using LogLib independently (Without AppLib)
 ```
 using CFG2.Utils.LogLib;
 
@@ -38,7 +52,7 @@ public class Program
 
 ## Release Notes
 
-### 1.0.2
+### 1.0.3
 - Added cleanup of old log entries via optional retentionDays param (defaults to 30)
 
 ### 1.0.0
