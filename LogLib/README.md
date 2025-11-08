@@ -38,5 +38,8 @@ public class Program
 
 ## Release Notes
 
+### 1.0.2
+- Added cleanup of old log entries via optional retentionDays param (defaults to 30)
+
 ### 1.0.0
 - Initial Release

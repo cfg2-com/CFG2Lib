@@ -1,26 +1,30 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
+using System.Text;
 
 namespace CFG2.Utils.LogLib;
 
 // Src: https://csharpindepth.com/articles/Singleton
 public sealed class Logger {
-    private static readonly Dictionary<string, Logger> instances = [];
-    private static readonly object padlock = new();
+    private static readonly Dictionary<string, Logger> _instances = [];
+    private static readonly object _padlock = new();
 
-    private readonly string logFilename = "";
-    private readonly string logDir = "";
-    private readonly string logFile = "";
+    private readonly string _logFilename = "";
+    private readonly string _logDir = "";
+    private readonly string _logFile = "";
 
-    private Logger(string dir, string filename) {
-        logDir = dir;
+    private Logger(string dir, string filename, int retentionDays = 30) {
+        _logDir = dir;
 
-        if (!Directory.Exists(logDir)) {
-            Trace("Log directory does not exist, creating: " + logDir);
-            Directory.CreateDirectory(logDir);
+        if (!Directory.Exists(_logDir)) {
+            Trace("Log directory does not exist, creating: " + _logDir);
+            Directory.CreateDirectory(_logDir);
         }
 
-        logFilename = filename;
-        logFile = Path.Combine(logDir, logFilename);
+        _logFilename = filename;
+        _logFile = Path.Combine(_logDir, _logFilename);
+
+        CleanupOldLogs(retentionDays);
     }
 
     /// <summary>
@@ -44,14 +48,14 @@ public sealed class Logger {
         {
             filename = appName + ".log";
         }
-        lock (padlock)
+        lock (_padlock)
         {
-            if (!instances.ContainsKey(filename))
+            if (!_instances.ContainsKey(filename))
             {
                 string logDir = Path.Combine(appDir, "Logs");
-                instances.Add(filename, new Logger(logDir, filename));
+                _instances.Add(filename, new Logger(logDir, filename));
             }
-            return instances[filename];
+            return _instances[filename];
         }
     }
 
@@ -61,7 +65,7 @@ public sealed class Logger {
     /// <returns>Just the file name (no path info)</returns>
     public string GetFilename()
     {
-        return logFilename;
+        return _logFilename;
     }
 
     /// <summary>
@@ -70,7 +74,7 @@ public sealed class Logger {
     /// <returns>Log file directory</returns>
     public string GetDir()
     {
-        return logDir;
+        return _logDir;
     }
 
     /// <summary>
@@ -79,7 +83,7 @@ public sealed class Logger {
     /// <returns>Full path to log file</returns>
     public string GetFile()
     {
-        return logFile;
+        return _logFile;
     }
     
     /// <summary>
@@ -124,14 +128,83 @@ public sealed class Logger {
         LogIt("ERROR : "+msg);
     }
 
-    private void LogIt(string msg) {
-        try {
-            using (StreamWriter sw = File.AppendText(logFile)) {
-                sw.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")+" : "+msg);
+    private void LogIt(string msg)
+    {
+        try
+        {
+            using (StreamWriter sw = File.AppendText(_logFile))
+            {
+                sw.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " : " + msg);
             }
-        } catch (Exception e) {
-            Trace("Exception in LoggerLib: "+e.Message);
+        }
+        catch (Exception e)
+        {
+            Trace("Exception in LoggerLib: " + e.Message);
         }
         Trace(msg); // Console.WriteLine
+    }
+    
+    private void CleanupOldLogs(int retentionDays)
+    {
+        try
+        {
+            if (!File.Exists(_logFile)) {
+                return;
+            }
+
+            string tempFile = Path.GetTempFileName();
+            DateTime threshold = DateTime.Now.AddDays(-retentionDays);
+            bool foundRecent = false;
+
+            using (var sr = new StreamReader(_logFile))
+            using (var sw = new StreamWriter(tempFile, false, Encoding.UTF8))
+            {
+                string? line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (!foundRecent)
+                    {
+                        if (line.Length >= 19)
+                        {
+                            string tsPart = line.Substring(0, 19);
+                            if (DateTime.TryParseExact(tsPart, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime ts))
+                            {
+                                if (ts >= threshold)
+                                {
+                                    // This and all following lines are recent enough — keep them
+                                    foundRecent = true;
+                                    Trace("Cleaning up old log entires prior to: " + threshold.ToString("yyyy-MM-dd HH:mm:ss"));
+                                    sw.WriteLine(line);
+                                }
+                                // else skip this old line
+                            }
+                            // else line doesn't start with a timestamp — skip until we find a timestamp within range
+                        }
+                        // else line too short to contain timestamp — skip
+                    }
+                    else
+                    {
+                        sw.WriteLine(line);
+                    }
+                }
+            }
+
+            if (foundRecent)
+            {
+                // Replace original file with temp file
+                File.Copy(tempFile, _logFile, true);
+                File.Delete(tempFile);
+            }
+            else
+            {
+                // No recent entries found — remove original log and temp file
+                File.Delete(_logFile);
+                File.Delete(tempFile);
+            }
+        }
+        catch (Exception e)
+        {
+            Trace("Exception during log cleanup: " + e.Message);
+        }
     }
 }
