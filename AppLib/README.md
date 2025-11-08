@@ -48,6 +48,10 @@ public class TestApp
 
 ## Release Notes
 
+### 1.0.18
+- Using retentionDays for log cleanup
+- Better protection against retentionDays <= 0 (i.e. don't delete anything)
+
 ### 1.0.17
 - Added TempFile
 

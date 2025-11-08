@@ -71,7 +71,7 @@ public class App
 
         // Get (and create if necessary) the app directory: {configRootDir}/{appName}.
         // While at the same time initializing the logger instance.
-        _logger = Logger.Instance(GetAppDir());
+        _logger = Logger.Instance(GetAppDir(), _retentionDays);
 
         CleanupSoftDeleteDirectory(_retentionDays);
     }
@@ -90,6 +90,7 @@ public class App
     public string TempDir => GetTempDir();
     public string TempLocalDir => SysLib.GetSpecialFolder(SpecialFolder.Temp);
     public string TempFile => Path.GetTempFileName();
+    public int RetentionDays => _retentionDays;
 
     private string GetAppName()
     {
@@ -309,14 +310,20 @@ public class App
 
     public void CleanupSoftDeleteDirectory(int days)
     {
-        string deleteDir = GetAppSoftDeleteDir();
-        if (Directory.Exists(deleteDir)) {
-            DateTime RetentionThreshold = DateTime.Now.AddDays(days * -1);
-            string[] files = Directory.GetFiles(deleteDir);
-            foreach (string file in files) {
-                if (File.GetLastWriteTime(file).CompareTo(RetentionThreshold) < 0) {
-                    _logger.Log("Deleting: "+file);
-                    File.Delete(file);
+        if (days > 0)
+        {
+            string deleteDir = GetAppSoftDeleteDir();
+            if (Directory.Exists(deleteDir))
+            {
+                DateTime RetentionThreshold = DateTime.Now.AddDays(days * -1);
+                string[] files = Directory.GetFiles(deleteDir);
+                foreach (string file in files)
+                {
+                    if (File.GetLastWriteTime(file).CompareTo(RetentionThreshold) < 0)
+                    {
+                        _logger.Log("Deleting: " + file);
+                        File.Delete(file);
+                    }
                 }
             }
         }

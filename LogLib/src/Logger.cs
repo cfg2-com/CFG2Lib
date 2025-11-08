@@ -151,7 +151,7 @@ public sealed class Logger {
     {
         try
         {
-            if (!File.Exists(_logFile)) {
+            if (!File.Exists(_logFile) || retentionDays <= 0) {
                 return;
             }
 
