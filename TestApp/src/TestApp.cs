@@ -4,19 +4,23 @@ using CFG2.Utils.AppLib;
 using CFG2.Utils.HttpLib;
 using CFG2.Utils.SecLib;
 using CFG2.Utils.SQLiteLib;
+using CFG2.Utils.SysLib;
 
 public class TestApp
 {
-    private static App app;
-    private static App app2;
+    private static App _app;
+    private static App _app2;
 
     static void Main(string[] args)
     {
         // Initialize App
-        app = new();
-        app2 = new("Named Test App", false);
+        _app = new();
+        _app2 = new("Named Test App", false);
 
-        app.Log("Logging a message via the default logger provided by AppLib.");
+        AppConfig appConfig = new AppConfig(_app); // Optional, but extremely useful if you have configuration you want to load/save
+        Deduper deduper = new Deduper(_app, "TestAppDeduper"); // Optional, but useful if you want to track things you've already processed.
+
+        _app.Log("Logging a message via the default logger provided by AppLib.");
 
         //TestSecUtil();
         TestSecurProp();
@@ -32,10 +36,11 @@ public class TestApp
         //TestKVPfile();
         //TestKVPmdp();
         //TestHttp();
+        TestFileDiff();
 
-        app = new(null, false);
+        //_app = new(null, false); // Test out creating an App using the default name, but not in the sync directory.
 
-        app.Trace("Goodbye");
+        _app.Trace("Goodbye");
     }
 
     private static void TestSecUtil()
@@ -43,171 +48,190 @@ public class TestApp
         string password = "This is a test password";
         string originalValue = "This is a test value";
         string encryptedValue = SecUtil.Encrypt(password, "This is a test value");
-        app.Trace("Encrypted Value: " + encryptedValue);
+        _app.Trace("Encrypted Value: " + encryptedValue);
         string decryptedValue = SecUtil.Decrypt(password, encryptedValue);
-        app.Trace("Decrypted Value: " + decryptedValue);
-        app.Trace($"Success: {originalValue == decryptedValue}");
+        _app.Trace("Decrypted Value: " + decryptedValue);
+        _app.Trace($"Success: {originalValue == decryptedValue}");
+    }
+
+    private static void TestFileDiff()
+    {
+        string file1 = SysLib.GetTempFile();
+        string file2 = SysLib.GetTempFile();
+
+        string file1Content = "This is a test file.\nWith multiple lines.\nLine 3.\nLine 4.";
+        File.WriteAllText(file1, file1Content);
+        File.WriteAllText(file2, "This is a test file.\nWith multiple lines.\nLine 3 modified.\nLine 4.");
+
+        bool differ = SysLib.IsFileDifferent(file1, file2);
+        _app.Trace("Files differ (should return true): " + differ);
+
+        differ = SysLib.IsFileDifferentThanString(file1, file1Content);
+        _app.Trace("File differs from string (should return false): " + differ);
+
+        File.Delete(file1);
+        File.Delete(file2);
     }
 
     private static void TestSecurProp()
     {
-        AppConfig appConfig = new AppConfig(app, null, null, "thisIsMyTestPassword");
+        AppConfig appConfig = new AppConfig(_app, null, null, "thisIsMyTestPassword");
         bool success = appConfig.AddPersistedProperty("testSecureProp", "This is a secure property", "Test secure property", true);
         if (!success)
         {
-            app.Trace("WARN: Did not add property, but likely because it already exists.");
+            _app.Trace("WARN: Did not add property, but likely because it already exists.");
         }
-        app.Trace("Secure prop value: " + appConfig.GetProperty("testSecureProp", true));
+        _app.Trace("Secure prop value: " + appConfig.GetProperty("testSecureProp", true));
     }
 
     private static void TestAppConfig()
     {
-        AppConfig appConfig = new AppConfig(app);
-        appConfig.AddPersistedProperty("appBackupDir", app.BackupDir);
-        app.Trace("prop val: " + appConfig.GetProperty("appBackupDir"));
+        AppConfig appConfig = new AppConfig(_app);
+        appConfig.AddPersistedProperty("appBackupDir", _app.BackupDir);
+        _app.Trace("prop val: " + appConfig.GetProperty("appBackupDir"));
 
         string tempProp = "temp-prop";
-        app.Trace(tempProp+" (before): " + appConfig.GetProperty(tempProp));
+        _app.Trace(tempProp+" (before): " + appConfig.GetProperty(tempProp));
         appConfig.AddTempProperty(tempProp, "some value");
-        app.Trace(tempProp+" (after): " + appConfig.GetProperty(tempProp));
+        _app.Trace(tempProp+" (after): " + appConfig.GetProperty(tempProp));
     }
 
     private static void TestMigrateAppConfig()
     {
         string testProp = "something";
-        AppConfig appConfig = new AppConfig(app);
-        string legacyFile = Path.Combine(app.Dir, "legacy.properties");
-        app.Trace("Migration success (should be false)=" + MigrationUtils.MigrateAppConfigFile(legacyFile, appConfig));
-        app.Trace("prop that doesn't exist: " + appConfig.GetProperty(testProp));
+        AppConfig appConfig = new AppConfig(_app);
+        string legacyFile = Path.Combine(_app.Dir, "legacy.properties");
+        _app.Trace("Migration success (should be false)=" + MigrationUtils.MigrateAppConfigFile(legacyFile, appConfig));
+        _app.Trace("prop that doesn't exist: " + appConfig.GetProperty(testProp));
 
         File.WriteAllText(legacyFile, testProp+"=avalue");
-        app.Trace("Migration success (should be true)=" + MigrationUtils.MigrateAppConfigFile(legacyFile, appConfig));
-        app.Trace("prop that should exist: " + appConfig.GetProperty(testProp));
+        _app.Trace("Migration success (should be true)=" + MigrationUtils.MigrateAppConfigFile(legacyFile, appConfig));
+        _app.Trace("prop that should exist: " + appConfig.GetProperty(testProp));
 
         File.Delete(appConfig.GetFile());
     }
 
     private static void TestMigrateFile()
     {
-        string legacyFile = Path.Combine(app.Dir, "temp.txt");
-        string newFile = Path.Combine(app.Dir, "new.txt");
-        app.Trace("Migration success (should be false)=" + MigrationUtils.MigrateFile(legacyFile, newFile));
+        string legacyFile = Path.Combine(_app.Dir, "temp.txt");
+        string newFile = Path.Combine(_app.Dir, "new.txt");
+        _app.Trace("Migration success (should be false)=" + MigrationUtils.MigrateFile(legacyFile, newFile));
 
         File.WriteAllText(legacyFile, "Junk");
-        app.Trace("Migration success (should be true)=" + MigrationUtils.MigrateFile(legacyFile, newFile));
+        _app.Trace("Migration success (should be true)=" + MigrationUtils.MigrateFile(legacyFile, newFile));
 
         File.Delete(newFile);
     }
 
     private static void TestProperties()
     {
-        app.Trace(app.Name);
-        app.Trace(app.Dir);
-        app.Trace(app.LogDir);
-        app.Trace(app.DataDir);
-        app.Trace(app.BackupDir);
-        app.Trace(app.SoftDeleteDir);
-        app.Trace(app.SyncDir);
-        app.Trace(app.BackupBaseDir);
-        app.Trace(app.BackupRootDir);
-        app.Trace(app.InboxDir);
-        app.Trace(app.GetMDP().File);
+        _app.Trace(_app.Name);
+        _app.Trace(_app.Dir);
+        _app.Trace(_app.LogDir);
+        _app.Trace(_app.DataDir);
+        _app.Trace(_app.BackupDir);
+        _app.Trace(_app.SoftDeleteDir);
+        _app.Trace(_app.SyncDir);
+        _app.Trace(_app.BackupBaseDir);
+        _app.Trace(_app.BackupRootDir);
+        _app.Trace(_app.InboxDir);
+        _app.Trace(_app.GetMDP().File);
     }
 
     private static void TestKVPfile()
     {
-        KVP kvpFile = new KVPfile(app, "TEST");
+        KVP kvpFile = new KVPfile(_app, "TEST");
         kvpFile.Add("key1", "value1");
         kvpFile.Add("key2", "value2=5");
-        app.Trace(kvpFile.Value("key1"));
-        app.Trace(kvpFile.Value("key2"));
-        app.Trace(kvpFile.ContainsKey("key1")+"");
+        _app.Trace(kvpFile.Value("key1"));
+        _app.Trace(kvpFile.Value("key2"));
+        _app.Trace(kvpFile.ContainsKey("key1")+"");
     }
 
     private static void TestKVPmdp()
     {
-        KVP kvpMDP = new KVPmdp(app, "test");
+        KVP kvpMDP = new KVPmdp(_app, "test");
         kvpMDP.Add("key1", "value1");
         kvpMDP.Add("key2", "value2=5");
-        app.Trace(kvpMDP.Value("key1"));
-        app.Trace(kvpMDP.Value("key2"));
-        app.Trace(kvpMDP.ContainsKey("key1")+"");
+        _app.Trace(kvpMDP.Value("key1"));
+        _app.Trace(kvpMDP.Value("key2"));
+        _app.Trace(kvpMDP.ContainsKey("key1")+"");
     }
 
     private static void TestAppMdpDeduper()
     {
-        Deduper deduper = new(app, "Test Deduper");
-        app.Trace("Deduper File: "+deduper.GetFile());
+        Deduper deduper = new(_app, "Test Deduper");
+        _app.Trace("Deduper File: "+deduper.GetFile());
         deduper.AddItem("test-key", "This is a test item");
-        app.Trace("Deduper Key Exists: " + deduper.ContainsKey("test-key"));
-        app.Trace("Deduper Key Never Exists: " + deduper.ContainsKey("test-key-never-exists"));
+        _app.Trace("Deduper Key Exists: " + deduper.ContainsKey("test-key"));
+        _app.Trace("Deduper Key Never Exists: " + deduper.ContainsKey("test-key-never-exists"));
 
-        Deduper deduper2 = new(app2, "Test Deduper");
+        Deduper deduper2 = new(_app2, "Test Deduper");
         deduper2.AddItem("test-key", "This is a test item");
         deduper2.AddItem("test-key-app2", "This is a test item only in app2");
 
-        app.Trace("Deduper Key Exists (true): " + deduper2.ContainsKey("test-key-app2"));
-        app.Trace("Deduper Key Exists (false): " + deduper.ContainsKey("test-key-app2"));
+        _app.Trace("Deduper Key Exists (true): " + deduper2.ContainsKey("test-key-app2"));
+        _app.Trace("Deduper Key Exists (false): " + deduper.ContainsKey("test-key-app2"));
 
         List<WhereClause> whereClauses = new()
         {
             new WhereClause("KEY_ID", "LIKE", "test-key%"),
             new WhereClause("GROUP_C", "LIKE", "%TEST APP%")
         };
-        app.GetMDP().DeleteRecords("DEDUPER", whereClauses);
+        _app.GetMDP().DeleteRecords("DEDUPER", whereClauses);
     }
 
     private static void TestMigrateDeduper()
     {
-        string legacyFile = Path.Combine(app.Dir, "temp.txt");
+        string legacyFile = Path.Combine(_app.Dir, "temp.txt");
         File.WriteAllText(legacyFile, @"c:\some\file.txt");
 
-        Deduper deduper = new(app, "Test");
+        Deduper deduper = new(_app, "Test");
 
         MigrationUtils.MigrateDeduper(legacyFile, deduper);
 
-        app.Trace("Deduper Key Exists: " + deduper.ContainsKey(@"c:\some\file.txt"));
+        _app.Trace("Deduper Key Exists: " + deduper.ContainsKey(@"c:\some\file.txt"));
         List<WhereClause> whereClauses = new()
         {
             new WhereClause("KEY_ID", "=", @"c:\some\file.txt"),
             new WhereClause("GROUP_C", "=", "TEST")
         };
-        app.GetMDP().DeleteRecords("DEDUPER", whereClauses);
+        _app.GetMDP().DeleteRecords("DEDUPER", whereClauses);
     }
 
     private static void TestGlobalMdpDeduper()
     {
-        Deduper globalDeduper = new(app, "Test", true);
-        app.Trace("Deduper File: "+globalDeduper.GetFile());
+        Deduper globalDeduper = new(_app, "Test", true);
+        _app.Trace("Deduper File: "+globalDeduper.GetFile());
         globalDeduper.AddItem("test-key", "This is a global test item");
-        app.Trace("Global Deduper Key Exists: " + globalDeduper.ContainsKey("test-key"));
-        app.Trace("Global Deduper Key Never Exists: " + globalDeduper.ContainsKey("test-key-never-exists"));
+        _app.Trace("Global Deduper Key Exists: " + globalDeduper.ContainsKey("test-key"));
+        _app.Trace("Global Deduper Key Never Exists: " + globalDeduper.ContainsKey("test-key-never-exists"));
         List<WhereClause> whereClauses = new()
         {
             new WhereClause("KEY_ID", "=", "test-key"),
             new WhereClause("GROUP_C", "=", "GLOBAL - TEST")
         };
-        app.GetMDP().DeleteRecords("DEDUPER", whereClauses);
+        _app.GetMDP().DeleteRecords("DEDUPER", whereClauses);
     }
 
     private static void TestGlobalFileDeduper()
     {
-        Deduper globalDeduper = new(app, "Test", true, false);
-        app.Trace("Deduper File: "+globalDeduper.GetFile());
+        Deduper globalDeduper = new(_app, "Test", true, false);
+        _app.Trace("Deduper File: "+globalDeduper.GetFile());
         globalDeduper.AddItem("test-key", "This is a global test item");
-        app.Trace("Global Deduper Key Exists: " + globalDeduper.ContainsKey("test-key"));
-        app.Trace("Global Deduper Key Never Exists: " + globalDeduper.ContainsKey("test-key-never-exists"));
+        _app.Trace("Global Deduper Key Exists: " + globalDeduper.ContainsKey("test-key"));
+        _app.Trace("Global Deduper Key Never Exists: " + globalDeduper.ContainsKey("test-key-never-exists"));
     }
 
     private static void TestSoftDelete()
     {
-        app.CleanupSoftDeleteDirectory(4);
-        app.SoftDeleteFile(app.LogFile);
+        _app.CleanupSoftDeleteDirectory(4);
+        _app.SoftDeleteFile(_app.LogFile);
     }
 
     private static void TestHttp()
     {
         HttpRequest req = new("https://google.com");
-        app.Trace(HttpLib.Get(req).Content);
+        _app.Trace(HttpLib.Get(req).Content);
     }
 }

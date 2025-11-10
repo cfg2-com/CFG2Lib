@@ -13,11 +13,12 @@ public class AppConfig
     private KVP _kvpFile;
 
     /// <summary>
-    /// Deduper constructor.
+    /// AppConfig constructor.
     /// </summary>
-    /// <param name="app">The app to for these configuration properties.</param>
-    /// <param name="cfgFile">If a file with this name exists in the AppDir, it will be read.</param>
-    /// <param name="mdpTable">This table will be read from MDP.db in the SyncDir.</param>
+    /// <param name="app">The App for these configuration properties.</param>
+    /// <param name="cfgFile">If a file with this name exists in the AppDir, it will be read. Default to app.cfg if empty or null.</param>
+    /// <param name="mdpTable">This table will be read from MDP.db in the SyncDir. Default to APP_CONFIG if empty or null.</param>
+    /// <param name="encryptionPassword">If provided, this password will be used to encrypt/decrypt secure properties.</param>
     public AppConfig(App app, string? cfgFile = "app.cfg", string? mdpTable = "APP_CONFIG", string? encryptionPassword = null)
     {
         if (string.IsNullOrEmpty(cfgFile)) { cfgFile = "app.cfg"; }
@@ -31,6 +32,9 @@ public class AppConfig
         Reload();
     }
 
+    /// <summary>
+    /// Forces a reload the configuration properties.
+    /// </summary>
     public void Reload()
     {
         _app.Log("Loading AppConfig");
@@ -52,16 +56,22 @@ public class AppConfig
         }
     }
 
+    /// <summary>
+    /// Checks if the specified <paramref name="property"/> exists in the configuration.
+    /// </summary>
+    /// <param name="property">The property to check for existence.</param>
+    /// <returns><see langword="true"/> if <paramref name="property"/> exists, otherwise <see langword="false"/>./returns>
     public bool ContainsProperty(string property)
     {
         return _kvp.ContainsKey(property);
     }
 
     /// <summary>
-    /// Adds a temporary property with the specified key and value to the collection if the property does NOT already exist.
+    /// Adds a temporary <paramref name="property"/> with the specified <paramref name="value"/> to the collection if the property does NOT already exist. 
+    /// If the <paramref name="property"/> exists, no action is taken.
     /// </summary>
     /// <param name="property">The key of the property to add. Cannot be null or empty.</param>
-    /// <param name="value">The value associated with the property key.</param>
+    /// <param name="value">The value associated with the <paramref name="property"/> key.</param>
     /// <param name="debug">An optional debug string for additional context or logging purposes.</param>
     /// <returns><see langword="true"/> if the property was successfully added; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="property"/> is null or empty.</exception>
@@ -75,24 +85,26 @@ public class AppConfig
     }
 
     /// <summary>
-    /// Adds a property to the persisted key-value store if the property does NOT already exist and optionally encrypts its value.
+    /// Adds a <paramref name="property"/> to the persisted key-value store if the property does NOT already exist and optionally encrypts the <paramref name="value"/>. 
+    /// If the <paramref name="property"/> exists, no action is taken.
     /// </summary>
-    /// <remarks>This method adds the specified property to both the runtime key-value store and the persisted
-    /// store. If <paramref name="secure"/> is <see langword="true"/>, the value is encrypted before being
-    /// stored.</remarks>
+    /// <remarks>This method adds the specified <paramref name="property"/> to both the runtime key-value store and the persisted
+    /// store. If <paramref name="secure"/> is <see langword="true"/>, the value is encrypted using the <paramref name="encryptionPassword"/> 
+    /// specified in the constructor before being stored.</remarks>
     /// <param name="property">The name of the property to add. Cannot be null or empty.</param>
-    /// <param name="value">The value of the property to add. If <paramref name="secure"/> is <see langword="true"/>, the value will be
+    /// <param name="value">The value of the <paramref name="property"/> to add. If <paramref name="secure"/> is <see langword="true"/>, the value will be
     /// encrypted before being stored.</param>
     /// <param name="debug">An optional debug string for logging or tracking purposes. Can be null or empty.</param>
     /// <param name="secure">A boolean indicating whether the value should be encrypted before being stored. <see langword="true"/> to
     /// encrypt; otherwise, <see langword="false"/>.</param>
     /// <returns><see langword="true"/> if the property was successfully added to the persisted store; otherwise, <see
     /// langword="false"/>.</returns>
+    /// <exception cref="ArgumentException">If <paramref name="encryptionPassword"/> or <paramref name="property"/> is null or empty.</exception>
     public bool AddPersistedProperty(string property, string value, string debug = "", bool secure = false)
     {
         if (secure)
         {
-            if (_encryptionPassword == null)
+            if (string.IsNullOrEmpty(_encryptionPassword))
             {
                 throw new ArgumentException("encryptionPassword (set in the constructor) cannot be null when secure is true");
             }
@@ -103,6 +115,15 @@ public class AppConfig
         return _kvpMDP.Add(property, value, debug); // Save for next time
     }
 
+    /// <summary>
+    /// Gets the value of the specified <paramref name="property"/>. If <paramref name="secure"/> is true, the value will be decrypted 
+    /// using the <paramref name="encryptionPassword"/> specified in the constructor before being returned.
+    /// </summary>
+    /// <param name="property">The property to retrieve the value for.</param>
+    /// <param name="secure">A boolean indicating whether the value should be decrypted before being returned. <see langword="true"/> to
+    /// decrypt; otherwise, <see langword="false"/>./param>
+    /// <returns>The value of the specified <paramref name="property"/>./returns>
+    /// <exception cref="ArgumentException">If <paramref name="encryptionPassword"/> is null or empty./exception>
     public string GetProperty(string property, bool secure = false)
     {
         string? value = _kvp.Value(property);
@@ -114,7 +135,7 @@ public class AppConfig
         {
             if (secure)
             {
-                if (_encryptionPassword == null)
+                if (string.IsNullOrEmpty(_encryptionPassword))
                 {
                     throw new ArgumentException("encryptionPassword (set in the constructor) cannot be null when secure is true");
                 }

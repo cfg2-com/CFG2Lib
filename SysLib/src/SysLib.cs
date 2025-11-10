@@ -95,9 +95,9 @@ public class SysLib
     /// <summary>
     /// Cleans a string to be safe for use as a file name. Do NOT send full path or extension.
     /// </summary>
-    /// <param name="str"></param>
+    /// <param name="str">The string to sanitize.</param>
     /// <param name="removeEmailPrefixes">If true, removes common email prefixes like "Fwd: " and "Re: "</param>
-    /// <returns></returns>
+    /// <returns>A version of <paramref name="str"/> that is safe to use for a filename.</returns>
     public static string GetFileNameSafeString(string str, bool removeEmailPrefixes = true)
     {
         if (!string.IsNullOrEmpty(str))
@@ -108,12 +108,12 @@ public class SysLib
                 while (continueLoop)
                 {
                     continueLoop = false;
-                    if (str.ToLower().StartsWith("fwd: "))
+                    if (str.StartsWith("fwd: ", StringComparison.OrdinalIgnoreCase))
                     {
                         str = str.Substring(5);
                         continueLoop = true;
                     }
-                    if (str.ToLower().StartsWith("re: "))
+                    if (str.StartsWith("re: ", StringComparison.OrdinalIgnoreCase))
                     {
                         str = str.Substring(4);
                         continueLoop = true;
@@ -135,8 +135,30 @@ public class SysLib
                     .Replace("|", "-")
                     .Replace("\"", "")
                     .Trim();
+
+            // Keep filename length reasonable
+            if (str.Length > 150)
+                str = str.Substring(0, 150).Trim();
         }
         return str;
+    }
+
+    /// <summary>
+    /// Sanitizes a folder path by removing invalid characters from each folder name in the path. 
+    /// For example, "C:\Temp\Inva|id\Fol*der" becomes "C:\Temp\Inva_id\Fol_der".
+    /// </summary>
+    /// <param name="folderName">The folder path to sanitize.</param>
+    /// <param name="directorySeparator">The directory separator character. Defaults to Windows path separator (backslash).</param>
+    /// <returns>A sanitized version of <paramref name="folderName"/>.</returns>
+    public static string SanitizeFolderPath(string folderName, char directorySeparator = '\\')
+    {
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var parts = folderName.Split(directorySeparator);
+        var sanitizedParts = parts.Select(part =>
+            string.Join("_", part.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries)).Trim()
+        );
+
+        return Path.Combine(sanitizedParts.ToArray());
     }
 
     /// <summary>
@@ -154,18 +176,14 @@ public class SysLib
             throw new FileNotFoundException("File does not exist.", file);
         }
 
-        string tempFile = Path.GetTempFileName();
+        string tempFile = GetTempFile();
         System.Text.Encoding encoding;
         using (var reader = new StreamReader(file, detectEncodingFromByteOrderMarks: true))
         {
-            // Force detection of encoding by reading at least one character (Peek will not consume)
-            if (reader.Peek() >= 0)
-            {
-                // no-op, just ensuring encoding detection
-            }
+            reader.Peek(); // Force detection of encoding by reading at least one character (Peek will not consume)
             encoding = reader.CurrentEncoding;
         }
-
+        Console.WriteLine("Detected encoding for comparison: " + encoding);
         File.WriteAllText(tempFile, content, encoding);
         bool result = IsFileDifferent(file, tempFile);
         File.Delete(tempFile);
@@ -174,12 +192,12 @@ public class SysLib
     }
 
     /// <summary>
-    /// Returns true if the two files are different.
+    /// Returns true if the two files are different, comparing line by line.
     /// </summary>
-    /// <param name="file1"></param>
-    /// <param name="file2"></param>
-    /// <returns></returns>
-    /// <exception cref="FileNotFoundException">If either file does not exist.</exception>
+    /// <param name="file1">First file to compare</param>
+    /// <param name="file2">Second file to compare</param>
+    /// <returns>True if files are different, false if identical</returns>
+    /// <exception cref="FileNotFoundException">If either file does not exist</exception>
     public static bool IsFileDifferent(string file1, string file2)
     {
         if (!File.Exists(file1) || !File.Exists(file2))
@@ -187,45 +205,45 @@ public class SysLib
             throw new FileNotFoundException("One or both files do not exist.");
         }
 
-        FileInfo fi1 = new(file1);
-        FileInfo fi2 = new(file2);
-
-        if (fi1.Length != fi2.Length)
+        using (var reader1 = new StreamReader(file1))
+        using (var reader2 = new StreamReader(file2))
         {
-            Console.WriteLine("File sizes differ: " + fi1.Length + " vs " + fi2.Length);
-            return true;
-        }
+            int lineNumber = 0;
+            string? line1, line2;
 
-        int bufferBlock = 0;
-        const int bufferSize = 1024 * 1024; // 1MB buffer
-        byte[] buffer1 = new byte[bufferSize];
-        byte[] buffer2 = new byte[bufferSize];
-
-        using (FileStream fs1 = fi1.OpenRead())
-        using (FileStream fs2 = fi2.OpenRead())
-        {
-            int bytesRead1;
-            int bytesRead2;
-
-            do
+            // Read until we hit end of one or both files
+            while ((line1 = reader1.ReadLine()) != null)
             {
-                bufferBlock++;
-                bytesRead1 = fs1.Read(buffer1, 0, bufferSize);
-                bytesRead2 = fs2.Read(buffer2, 0, bufferSize);
+                lineNumber++;
+                line2 = reader2.ReadLine();
 
-                if (bytesRead1 != bytesRead2 || !buffer1.Take(bytesRead1).SequenceEqual(buffer2.Take(bytesRead2)))
+                if (line2 == null)
                 {
-                    Console.WriteLine($"Files differ at block ({bufferSize} bytes): {bufferBlock}");
-                    Console.WriteLine($"----- {file1} block -----");
-                    Console.WriteLine(BitConverter.ToString(buffer1, 0, bytesRead1));
-                    Console.WriteLine($"----- {file2} block -----");
-                    Console.WriteLine(BitConverter.ToString(buffer2, 0, bytesRead2));
+                    Console.WriteLine($"Files differ at line {lineNumber}: Second file is shorter");
                     return true;
                 }
-            } while (bytesRead1 > 0);
+
+                if (line1 != line2)  // Note: this does exact string comparison
+                {
+                    Console.WriteLine($"There is a difference on line {lineNumber}:");
+                    return true;
+                }
+            }
+
+            // Check if second file is longer
+            if (reader2.ReadLine() != null)
+            {
+                Console.WriteLine($"Files differ at line {lineNumber + 1}: First file is shorter");
+                return true;
+            }
         }
 
         return false;
+    }
+
+    public static string GetTempFile()
+    {
+        return Path.GetTempFileName();
     }
 
     public static string GetSpecialFolder(SpecialFolder specialFolder)

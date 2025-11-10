@@ -24,6 +24,8 @@ public class TestApp
     static void Main(string[] args)
     {
         App app = new();
+        AppConfig appConfig = new AppConfig(app); // Optional, but extremely useful if you have configuration you want to load/save
+        Deduper deduper = new Deduper(app, "MyAppDeduper"); // Optional, but useful if you want to track things you've already processed.
 
         app.Log("Logging a message via the default logger provided by App instance.");
 
@@ -47,6 +49,9 @@ public class TestApp
 ```
 
 ## Release Notes
+
+### 1.0.19
+- Updated documentation
 
 ### 1.0.18
 - Using retentionDays for log cleanup

@@ -15,6 +15,13 @@ public class App
     private SQLiteUtil _mdp;
 
 
+    /// <summary>
+    /// App constructor.
+    /// </summary>
+    /// <param name="appName">The name of the application. If null or empty, it will default to Process.GetCurrentProcess().ProcessName.</param>
+    /// <param name="configInSyncDir">If true, the configuration directory will be created in the sync directory; otherwise, it will be created in the system AppData directory. Default is true.</param>
+    /// <param name="baseDir">The base directory under which the application configuration directory will be created. If null or empty, it will default to "CFG2".</param>
+    /// <param name="retentionDays">Number of days to retain log entries and soft deleted files. Entries older than this will be removed when the App is instantiated. Default is 30 days.</param>
     public App(string? appName = null, bool configInSyncDir = true, string? baseDir = null, int retentionDays = 30)
     {
         _retentionDays = retentionDays;
@@ -157,8 +164,8 @@ public class App
     /// set in the SYNC_DRIVE_HOME environment variable. If the enviroment variable does not exist, it will default to the 
     /// system AppData directory.
     /// </summary>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
+    /// <returns>Full path to the sync directory.</returns>
+    /// <exception cref="Exception">If the sync directory does not exist.</exception>
     private string GetSyncDir()
     {
         string syncHome;
@@ -226,26 +233,46 @@ public class App
         return dir;
     }
 
+    /// <summary>
+    /// Writes only the specified msg to the console (no timestamp or level)
+    /// </summary>
+    /// <param name="msg">Message to write.</param>
     public void Trace(string msg)
     {
         Logger.Trace(msg);
     }
 
+    /// <summary>
+    /// Writes an info log entry with the specified msg to the default App logger.
+    /// </summary>
+    /// <param name="msg">Message to write.</param>
     public void Log(string msg)
     {
         _logger.Log(msg);
     }
 
+    /// <summary>
+    /// Writes a warning log entry with the specified msg to the default App logger.
+    /// </summary>
+    /// <param name="msg">Message to write.</param>
     public void Warn(string msg)
     {
         _logger.Warn(msg);
     }
 
+    /// <summary>
+    /// Writes an error log entry with the specified msg to the default App logger.
+    /// </summary>
+    /// <param name="msg">Message to write.</param>
     public void Error(string msg)
     {
         _logger.Error(msg);
     }
 
+    /// <summary>
+    /// WARNING: Strongly recommend NOT using unless you really know what you're doing.
+    /// </summary>
+    /// <returns>An instance of the MDP.db SQLiteUtil.</returns>
     public SQLiteUtil GetMDP()
     {
         if (_mdp == null)
@@ -257,6 +284,11 @@ public class App
         return _mdp;
     }
 
+    /// <summary>
+    /// Soft deletes the specified file by copying it to the App's SoftDeleteDir and then deleting the original file.
+    /// </summary>
+    /// <param name="fullpath">Full path to the file to soft delete.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public bool SoftDeleteFile(string fullpath)
     {
         bool success = false;
@@ -308,6 +340,12 @@ public class App
         return success;
     }
 
+    /// <summary>
+    /// Cleans up files in the SoftDeleteDir older than the specified number of days. 
+    /// Note: You should not have to call this directly as it is called automatically when the App is instantiated.
+    /// </summary>
+    /// <param name="days">Number of days to retain soft deleted files.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public void CleanupSoftDeleteDirectory(int days)
     {
         if (days > 0)

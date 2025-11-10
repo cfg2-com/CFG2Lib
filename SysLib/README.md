@@ -6,6 +6,11 @@ Nothing in here is rocket science, but if it saves you from writing any boiler p
 
 ## Release Notes
 
+### 1.0.10
+- Added SanitizeFolderPath
+- Keep returned value under 150 in GetFileNameSafeString
+- Fix IsFileDifferentThanString and IsFileDifferent
+
 ### 1.0.9
 - Output info about file diffs
 
