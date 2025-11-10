@@ -1,3 +1,4 @@
+using System.Data;
 using CFG2.Utils.SecLib;
 
 namespace CFG2.Utils.AppLib;
@@ -75,11 +76,11 @@ public class AppConfig
     /// <param name="debug">An optional debug string for additional context or logging purposes.</param>
     /// <returns><see langword="true"/> if the property was successfully added; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="property"/> is null or empty.</exception>
-    public bool AddTempProperty(string property, string value, string debug = "")
+    public bool AddTempProperty(string property, string value, string? debug = "")
     {
         if (string.IsNullOrEmpty(property))
         {
-            throw new ArgumentException("property can not be null");
+            throw new ArgumentException("Property can not be empty or null", nameof(property));
         }
         return _kvp.Add(property, value, debug);
     }
@@ -100,13 +101,17 @@ public class AppConfig
     /// <returns><see langword="true"/> if the property was successfully added to the persisted store; otherwise, <see
     /// langword="false"/>.</returns>
     /// <exception cref="ArgumentException">If <paramref name="encryptionPassword"/> or <paramref name="property"/> is null or empty.</exception>
-    public bool AddPersistedProperty(string property, string value, string debug = "", bool secure = false)
+    public bool AddPersistedProperty(string property, string value, string? debug = "", bool secure = false)
     {
         if (secure)
         {
             if (string.IsNullOrEmpty(_encryptionPassword))
             {
-                throw new ArgumentException("encryptionPassword (set in the constructor) cannot be null when secure is true");
+                throw new DataException("encryptionPassword (set in the constructor) cannot be empty or null when secure is true");
+            }
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException("Value cannot be null or empty when secure is true", nameof(value));
             }
             value = SecUtil.Encrypt(_encryptionPassword, value);
         }
@@ -137,7 +142,7 @@ public class AppConfig
             {
                 if (string.IsNullOrEmpty(_encryptionPassword))
                 {
-                    throw new ArgumentException("encryptionPassword (set in the constructor) cannot be null when secure is true");
+                    throw new DataException("encryptionPassword (set in the constructor) cannot be null when secure is true");
                 }
                 value = SecUtil.Decrypt(_encryptionPassword, value);
             }

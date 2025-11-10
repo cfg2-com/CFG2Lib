@@ -50,7 +50,8 @@ public class TestApp
 
 ## Release Notes
 
-### 1.0.19
+### 1.0.20
+- Improved null value handling
 - Updated documentation
 
 ### 1.0.18

@@ -49,7 +49,7 @@ public class KVPfile : KVP
         }
     }
 
-    public override bool Add(string key, string value, string debug = "")
+    public override bool Add(string key, string value, string? debug = "")
     {
         if (ShouldAdd(key, value))
         {

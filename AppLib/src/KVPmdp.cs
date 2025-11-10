@@ -43,10 +43,14 @@ public class KVPmdp : KVP
         }
     }
 
-    public override bool Add(string key, string value, string debug = "")
+    public override bool Add(string key, string value, string? debug = "")
     {
         if (ShouldAdd(key, value))
         {
+            if (string.IsNullOrEmpty(debug))
+            {
+                debug = "";
+            }
             Record record = new Record();
             record.AddField(_keyField, key);
             record.AddField(_groupField, Group);
