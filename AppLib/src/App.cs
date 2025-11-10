@@ -96,7 +96,7 @@ public class App
     public string InboxDir => GetInboxDir();
     public string TempDir => GetTempDir();
     public string TempLocalDir => SysLib.GetSpecialFolder(SpecialFolder.Temp);
-    public string TempFile => Path.GetTempFileName();
+    public string TempFile => SysLib.GetTempFile();
     public int RetentionDays => _retentionDays;
 
     private string GetAppName()
