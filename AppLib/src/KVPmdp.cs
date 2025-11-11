@@ -39,7 +39,7 @@ public class KVPmdp : KVP
         {
             string key = record.FieldVal(_keyField);
             string value = record.FieldVal("VALUE_X");
-            Add(key, value);
+            base.Add(key, value);
         }
     }
 
@@ -59,13 +59,24 @@ public class KVPmdp : KVP
             record.AddField("CREATED_DT", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             _sqliteUtil.InsertRecord(_table, record);
 
-            Add(key, value);
+            base.Add(key, value);
             return true;
         }
         else
         {
             return false;
         }
+    }
+
+    public override void Remove(string key)
+    {
+        List<WhereClause> whereClauses =
+        [
+            new WhereClause(_keyField, WhereCondition.EQ, key),
+            new WhereClause(_groupField, WhereCondition.EQ, Group)
+        ];
+        _sqliteUtil.DeleteRecords(_table, whereClauses);
+        base.Remove(key);
     }
 
     public string GetFile()

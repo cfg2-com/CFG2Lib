@@ -11,12 +11,17 @@ public class KVPmemory(App app) : KVP(app, "MEMORY")
             //App.Trace($"Adding kvp: {key}={value}");
             if (!string.IsNullOrEmpty(debug)) { App.Log(debug); }
 
-            Add(key, value);
+            base.Add(key, value);
             return true;
         }
         else
         {
             return false;
         }
+    }
+
+    public override void Remove(string key)
+    {
+        base.Remove(key);
     }
 }

@@ -69,6 +69,14 @@ public abstract class KVP
         }
     }
 
+    public virtual void Remove(string key)
+    {
+        if (!string.IsNullOrEmpty(key) && ContainsKey(key))
+        {
+            _kvp.Remove(key);
+        }
+    }
+
     public bool ContainsKey(string key)
     {
         if (_kvp == null || string.IsNullOrEmpty(key))

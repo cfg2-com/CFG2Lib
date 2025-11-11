@@ -121,6 +121,17 @@ public class AppConfig
     }
 
     /// <summary>
+    /// Removes the specified <paramref name="property"/> from any underlying storage mechanisms.
+    /// </summary>
+    /// <param name="property">Config property to remove.</param>
+    public void RemoveProperty(string property)
+    {
+        _kvpMDP?.Remove(property);
+        _kvpFile?.Remove(property);
+        _kvp?.Remove(property);
+    }
+
+    /// <summary>
     /// Gets the value of the specified <paramref name="property"/>. If <paramref name="secure"/> is true, the value will be decrypted 
     /// using the <paramref name="encryptionPassword"/> specified in the constructor before being returned.
     /// </summary>

@@ -23,8 +23,8 @@ public class TestApp
         _app.Log("Logging a message via the default logger provided by AppLib.");
 
         //TestSecUtil();
-        TestSecurProp();
-        //TestAppConfig();
+        //TestSecurProp();
+        TestAppConfig();
         //TestMigrateAppConfig();
         //TestMigrateFile();
         //TestMigrateDeduper();
@@ -36,7 +36,7 @@ public class TestApp
         //TestKVPfile();
         //TestKVPmdp();
         //TestHttp();
-        TestFileDiff();
+        //TestFileDiff();
 
         //_app = new(null, false); // Test out creating an App using the default name, but not in the sync directory.
 
@@ -93,7 +93,10 @@ public class TestApp
         string tempProp = "temp-prop";
         _app.Trace(tempProp+" (before): " + appConfig.GetProperty(tempProp));
         appConfig.AddTempProperty(tempProp, "some value");
-        _app.Trace(tempProp+" (after): " + appConfig.GetProperty(tempProp));
+        _app.Trace(tempProp + " (after): " + appConfig.GetProperty(tempProp));
+
+        appConfig.RemoveProperty(tempProp);
+        _app.Trace("tempProp exists (should be false): "+appConfig.ContainsProperty(tempProp));
     }
 
     private static void TestMigrateAppConfig()
@@ -145,7 +148,11 @@ public class TestApp
         kvpFile.Add("key2", "value2=5");
         _app.Trace(kvpFile.Value("key1"));
         _app.Trace(kvpFile.Value("key2"));
-        _app.Trace(kvpFile.ContainsKey("key1")+"");
+        _app.Trace(kvpFile.ContainsKey("key1") + "");
+        
+        kvpFile.Remove("key1");
+        _app.Trace("After removal, key1 exists (should be false): " + kvpFile.ContainsKey("key1"));
+        _app.Trace("After removal, key2 exists (should be true): " + kvpFile.ContainsKey("key2"));
     }
 
     private static void TestKVPmdp()
@@ -155,7 +162,11 @@ public class TestApp
         kvpMDP.Add("key2", "value2=5");
         _app.Trace(kvpMDP.Value("key1"));
         _app.Trace(kvpMDP.Value("key2"));
-        _app.Trace(kvpMDP.ContainsKey("key1")+"");
+        _app.Trace(kvpMDP.ContainsKey("key1") + "");
+        
+        kvpMDP.Remove("key1");
+        _app.Trace("After removal, key1 exists (should be false): " + kvpMDP.ContainsKey("key1"));
+        _app.Trace("After removal, key2 exists (should be true): " + kvpMDP.ContainsKey("key2"));
     }
 
     private static void TestAppMdpDeduper()

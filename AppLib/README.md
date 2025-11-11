@@ -50,6 +50,9 @@ public class TestApp
 
 ## Release Notes
 
+### 1.0.21
+- Added ability to remove AppConfig and KVP properties
+
 ### 1.0.20
 - Improved null value handling
 - Updated documentation

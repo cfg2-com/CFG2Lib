@@ -55,7 +55,7 @@ public class KVPfile : KVP
         {
             //App.Trace($"Adding kvp: {key}={value}");
             if (!string.IsNullOrEmpty(debug)) { App.Log(debug); }
-            File.AppendAllText(_file, key+"="+value+"\n");
+            File.AppendAllText(_file, key + "=" + value + "\n");
 
             Add(key, value);
             return true;
@@ -63,6 +63,26 @@ public class KVPfile : KVP
         else
         {
             return false;
+        }
+    }
+    
+    public override void Remove(string key)
+    {
+        if (ContainsKey(key))
+        {
+            List<string> newLines = [];
+            foreach (string line in File.ReadLines(_file))
+            {
+                if (!line.StartsWith(key + "="))
+                {
+                    newLines.Add(line);
+                }
+            }
+
+            // Overwrite the file with the new content
+            File.WriteAllLines(_file, newLines);
+
+            base.Remove(key);
         }
     }
 }
