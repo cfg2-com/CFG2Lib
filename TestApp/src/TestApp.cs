@@ -24,12 +24,12 @@ public class TestApp
 
         //TestSecUtil();
         //TestSecurProp();
-        TestAppConfig();
+        //TestAppConfig();
         //TestMigrateAppConfig();
         //TestMigrateFile();
         //TestMigrateDeduper();
         //TestProperties();
-        //TestAppMdpDeduper();
+        TestAppMdpDeduper();
         //TestGlobalMdpDeduper();
         //TestGlobalFileDeduper();
         //TestSoftDelete();

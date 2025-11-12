@@ -52,6 +52,9 @@ public class Program
 
 ## Release Notes
 
+### 1.0.5
+- Refactored to allow printing timestamp and level for Trace messages (now the default)
+
 ### 1.0.4
 - Added cleanup of old log entries via optional retentionDays param (defaults to 30)
 

@@ -93,10 +93,10 @@ public sealed class Logger {
     /// Writes just msg to the console (no timestamp or level)
     /// </summary>
     /// <param name="msg"></param>
-    public static void Trace(string msg)
+    /// <param name="msgOnly">Print only the <paramref name="msg"/> without timestamp or level if true. Default is false.</param>
+    public static void Trace(string msg, bool msgOnly = false)
     {
-        // This is a static method to allow for easy tracing without needing an instance
-        Console.WriteLine(msg);
+        LogIt(null, "TRACE", msg, msgOnly);
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public sealed class Logger {
     /// </summary>
     /// <param name="msg"></param>
     public void Debug(string msg) {
-        LogIt("DEBUG : "+msg);
+        LogIt(_logFile, "DEBUG", msg);
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public sealed class Logger {
     /// </summary>
     /// <param name="msg"></param>
     public void Log(string msg) {
-        LogIt("INFO  : "+msg);
+        LogIt(_logFile, "INFO", msg);
     }
 
     /// <summary>
@@ -120,31 +120,41 @@ public sealed class Logger {
     /// </summary>
     /// <param name="msg"></param>
     public void Warn(string msg) {
-        LogIt("WARN  : "+msg);
+        LogIt(_logFile, "WARN", msg);
     }
 
     /// <summary>
     /// Writes msg to the log file and console
     /// </summary>
     /// <param name="msg"></param>
-    public void Error(string msg) {
-        LogIt("ERROR : "+msg);
+    public void Error(string msg)
+    {
+        LogIt(_logFile, "ERROR", msg);
     }
 
-    private void LogIt(string msg)
+    private static void LogIt(string? logFile, string level, string msg, bool msgOnly = false)
     {
+        string logMsg = msg;
+        if (!msgOnly)
+        {
+            logMsg = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " : " + level.ToUpper().PadRight(5) + " : " + msg;
+        }
+
         try
         {
-            using (StreamWriter sw = File.AppendText(_logFile))
+            if (!string.IsNullOrEmpty(logFile))
             {
-                sw.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " : " + msg);
+                using (StreamWriter sw = File.AppendText(logFile))
+                {
+                    sw.WriteLine(logMsg);
+                }
             }
         }
         catch (Exception e)
         {
-            Trace("Exception in LoggerLib: " + e.Message);
+            Console.WriteLine("ERROR: Exception in LoggerLib: " + e.Message);
         }
-        Trace(msg); // Console.WriteLine
+        Console.WriteLine(logMsg);
     }
     
     private void CleanupOldLogs(int retentionDays)

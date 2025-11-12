@@ -45,7 +45,7 @@ public class KVPmdp : KVP
 
     public override bool Add(string key, string value, string? debug = "")
     {
-        if (ShouldAdd(key, value))
+        if (base.ShouldAdd(key, value))
         {
             if (string.IsNullOrEmpty(debug))
             {

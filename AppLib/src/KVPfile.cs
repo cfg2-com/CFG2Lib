@@ -44,20 +44,20 @@ public class KVPfile : KVP
                         }
                     }
                 }
-                Add(key, value);
+                base.Add(key, value);
             }
         }
     }
 
     public override bool Add(string key, string value, string? debug = "")
     {
-        if (ShouldAdd(key, value))
+        if (base.ShouldAdd(key, value))
         {
             //App.Trace($"Adding kvp: {key}={value}");
             if (!string.IsNullOrEmpty(debug)) { App.Log(debug); }
             File.AppendAllText(_file, key + "=" + value + "\n");
 
-            Add(key, value);
+            base.Add(key, value);
             return true;
         }
         else
@@ -68,7 +68,7 @@ public class KVPfile : KVP
     
     public override void Remove(string key)
     {
-        if (ContainsKey(key))
+        if (base.ContainsKey(key))
         {
             List<string> newLines = [];
             foreach (string line in File.ReadLines(_file))

@@ -59,9 +59,14 @@ public class Deduper
         return _kvp.ContainsKey(key);
     }
 
-    public void AddItem(string key, string debug)
+    public void AddItem(string key, string? debug = "")
     {
         _kvp.Add(key, key, debug);
+    }
+
+    public void RemoveItem(string key)
+    {
+        _kvp.Remove(key);
     }
     
     /// <summary>

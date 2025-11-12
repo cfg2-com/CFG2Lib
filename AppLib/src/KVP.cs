@@ -79,7 +79,7 @@ public abstract class KVP
 
     public bool ContainsKey(string key)
     {
-        if (_kvp == null || string.IsNullOrEmpty(key))
+        if ((_kvp == null) || string.IsNullOrEmpty(key))
         {
             return false;
         }
