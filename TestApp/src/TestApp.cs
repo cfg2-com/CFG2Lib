@@ -23,13 +23,13 @@ public class TestApp
         _app.Log("Logging a message via the default logger provided by AppLib.");
 
         //TestSecUtil();
-        //TestSecurProp();
+        TestSecurProp();
         //TestAppConfig();
         //TestMigrateAppConfig();
         //TestMigrateFile();
         //TestMigrateDeduper();
         //TestProperties();
-        TestAppMdpDeduper();
+        //TestAppMdpDeduper();
         //TestGlobalMdpDeduper();
         //TestGlobalFileDeduper();
         //TestSoftDelete();

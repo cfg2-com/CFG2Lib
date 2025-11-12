@@ -6,8 +6,8 @@ public class Deduper
     private string _name;
     private bool _global;
     private bool _useMDP;
-    private string _file;
-    private string _mdpFile;
+    private string? _file;
+    private string? _mdpFile;
     private KVP _kvp;
 
     /// <summary>
@@ -23,6 +23,7 @@ public class Deduper
         _name = name;
         _global = global;
         _useMDP = useMDP;
+        _kvp = new KVPmemory(app); // will be overriden in Reload() with KVPfile or KVPmdp
 
         Reload();
     }
@@ -77,11 +78,11 @@ public class Deduper
     {
         if (_useMDP)
         {
-            return _mdpFile;
+            return _mdpFile!;
         }
         else
         {
-            return _file;
+            return _file!;
         }
     }
 }

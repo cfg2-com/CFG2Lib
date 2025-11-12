@@ -20,7 +20,7 @@ public class AppConfig
     /// <param name="cfgFile">If a file with this name exists in the AppDir, it will be read. Default to app.cfg if empty or null.</param>
     /// <param name="mdpTable">This table will be read from MDP.db in the SyncDir. Default to APP_CONFIG if empty or null.</param>
     /// <param name="encryptionPassword">If provided, this password will be used to encrypt/decrypt secure properties.</param>
-    public AppConfig(App app, string? cfgFile = "app.cfg", string? mdpTable = "APP_CONFIG", string? encryptionPassword = null)
+    public AppConfig(App app, string? cfgFile = "app.cfg", string? mdpTable = "APP_CONFIG", string encryptionPassword = "")
     {
         if (string.IsNullOrEmpty(cfgFile)) { cfgFile = "app.cfg"; }
         if (string.IsNullOrEmpty(mdpTable)) { mdpTable = "APP_CONFIG"; }

@@ -7,12 +7,12 @@ using CFG2.Utils.SQLiteLib;
 
 public class App
 {
-    private static Logger _logger;
     private readonly string _configRootDir;
     private readonly string _appName;
     private readonly string _baseDir;
     private readonly int _retentionDays;
-    private SQLiteUtil _mdp;
+    private readonly Logger _logger;
+    private SQLiteUtil? _mdp;
 
 
     /// <summary>
@@ -226,7 +226,8 @@ public class App
     private string GetBackupBaseDir()
     {
         string dir = Path.Combine(GetBackupRootDir(), _baseDir);
-        if (!Directory.Exists(dir)) {
+        if (!Directory.Exists(dir))
+        {
             Logger.Trace("Creating BackupBaseDir: " + dir);
             Directory.CreateDirectory(dir);
         }
@@ -237,9 +238,10 @@ public class App
     /// Writes only the specified msg to the console (no timestamp or level)
     /// </summary>
     /// <param name="msg">Message to write.</param>
-    public void Trace(string msg)
+    /// <param name="msgOnly">Print only the <paramref name="msg"/> without timestamp or level if true. Default is false.</param>
+    public void Trace(string msg, bool msgOnly = false)
     {
-        Logger.Trace(msg);
+        Logger.Trace(msg, msgOnly);
     }
 
     /// <summary>
