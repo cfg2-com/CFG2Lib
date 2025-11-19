@@ -23,7 +23,7 @@ public class TestApp
         _app.Log("Logging a message via the default logger provided by AppLib.");
 
         //TestSecUtil();
-        TestSecurProp();
+        //TestSecurProp();
         //TestAppConfig();
         //TestMigrateAppConfig();
         //TestMigrateFile();
@@ -35,7 +35,7 @@ public class TestApp
         //TestSoftDelete();
         //TestKVPfile();
         //TestKVPmdp();
-        //TestHttp();
+        TestHttp();
         //TestFileDiff();
 
         //_app = new(null, false); // Test out creating an App using the default name, but not in the sync directory.
