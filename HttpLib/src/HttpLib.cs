@@ -8,9 +8,9 @@ public class HttpLib
 {
     private static readonly HttpClient httpClient = new HttpClient();
 
-    public static async Task<HttpResponse> Get(HttpRequest req)
+    public static HttpResponse Get(HttpRequest req)
     {
-        return await DoGet(req);
+        return DoGet(req).GetAwaiter().GetResult();
     }
 
     private static async Task<HttpResponse> DoGet(HttpRequest req)
@@ -52,9 +52,9 @@ public class HttpLib
         return resp;
     }
 
-    public static async Task<HttpResponse> PostForm(HttpRequest req)
+    public static HttpResponse PostForm(HttpRequest req)
     {
-        return await DoFormPost(req);
+        return DoFormPost(req).GetAwaiter().GetResult();
     }
 
     private static async Task<HttpResponse> DoFormPost(HttpRequest req)
@@ -89,9 +89,9 @@ public class HttpLib
         return resp;
     }
 
-    public static async Task<HttpResponse> PostText(HttpRequest req)
+    public static HttpResponse PostText(HttpRequest req)
     {
-        return await DoTextPost(req);
+        return DoTextPost(req).GetAwaiter().GetResult();
     }
 
     private static async Task<HttpResponse> DoTextPost(HttpRequest req)
@@ -124,9 +124,9 @@ public class HttpLib
         return resp;
     }
 
-    public static async Task<HttpResponse> PostJson(HttpRequest req)
+    public static HttpResponse PostJson(HttpRequest req)
     {
-        return await DoJsonPost(req);
+        return DoJsonPost(req).GetAwaiter().GetResult();
     }
 
     private static async Task<HttpResponse> DoJsonPost(HttpRequest req)

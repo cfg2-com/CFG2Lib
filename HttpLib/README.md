@@ -25,6 +25,9 @@ public class TestApp
 
 ## Release Notes
 
+### 1.0.5
+- Now the right amount of internal awaiting
+
 ### 1.0.4
 - Now with more awaiting
 
