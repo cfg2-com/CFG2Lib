@@ -25,5 +25,8 @@ public class TestApp
 
 ## Release Notes
 
+### 1.0.3
+- Now with more awaiting
+
 ### 1.0.0
 - Initial Release

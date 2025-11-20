@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using CFG2.Utils.LogLib;
@@ -32,8 +31,8 @@ public class HttpLib
                 httpClient.DefaultRequestHeaders.Authorization = req.AuthHeader;
             }
 
-            using HttpResponseMessage response = httpClient.GetAsync(req.Url).Result;
-            resp.Content = response.Content.ReadAsStringAsync().Result;
+            using HttpResponseMessage response = await httpClient.GetAsync(req.Url);
+            resp.Content = await response.Content.ReadAsStringAsync();
             Logger.Trace(resp.Content);
             resp.HttpStatusCode = response.StatusCode;
             if (!response.IsSuccessStatusCode)
@@ -69,9 +68,13 @@ public class HttpLib
         HttpResponse resp = new HttpResponse();
         try
         {
+            if (req.FormParams == null)
+            {
+                throw new ArgumentNullException(nameof(req.FormParams), "FormParams cannot be null for a form post.");
+            }
             FormUrlEncodedContent formContent = new FormUrlEncodedContent(req.FormParams.ToArray());
-            using HttpResponseMessage response = httpClient.PostAsync(req.Url, formContent).Result;
-            resp.Content = response.Content.ReadAsStringAsync().Result;
+            using HttpResponseMessage response = await httpClient.PostAsync(req.Url, formContent);
+            resp.Content = await response.Content.ReadAsStringAsync();
             resp.HttpStatusCode = response.StatusCode;
             if (!response.IsSuccessStatusCode)
             {
@@ -105,22 +108,19 @@ public class HttpLib
         HttpResponse resp = new HttpResponse();
         try
         {
-            using (httpClient)
+            var content = new StringContent(req.Text, Encoding.UTF8, "text/plain");
+            var response = await httpClient.PostAsync(req.Url, content);
+            response.EnsureSuccessStatusCode(); // Throw an exception if the status code is not successful
+            Logger.Trace($"Response: {response.StatusCode}");
+            resp.Content = await response.Content.ReadAsStringAsync();
+            resp.HttpStatusCode = response.StatusCode;
+            if (!response.IsSuccessStatusCode)
             {
-                var content = new StringContent(req.Text, Encoding.UTF8, "text/plain");
-                var response = await httpClient.PostAsync(req.Url, content);
-                response.EnsureSuccessStatusCode(); // Throw an exception if the status code is not successful
-                Logger.Trace($"Response: {response.StatusCode}");
-                resp.Content = response.Content.ReadAsStringAsync().Result;
-                resp.HttpStatusCode = response.StatusCode;
-                if (!response.IsSuccessStatusCode)
-                {
-                    resp.Success = false;
-                }
-                else
-                {
-                    resp.Success = true;
-                }
+                resp.Success = false;
+            }
+            else
+            {
+                resp.Success = true;
             }
         }
         catch (Exception ex)
@@ -146,29 +146,26 @@ public class HttpLib
         HttpResponse resp = new HttpResponse();
         try
         {
-            using (httpClient)
+            if (req.AuthHeader != null)
             {
-                if (req.AuthHeader != null)
-                {
-                    httpClient.DefaultRequestHeaders.Authorization = req.AuthHeader;
-                }
-                StringContent httpContent = new StringContent(req.Json, Encoding.UTF8, "application/json");
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                using HttpResponseMessage response = httpClient.PostAsync(req.Url, httpContent).Result;
-                resp.Content = response.Content.ReadAsStringAsync().Result;
-                resp.HttpStatusCode = response.StatusCode;
-                if (!response.IsSuccessStatusCode)
-                {
-                    resp.Success = false;
-                }
-                else
-                {
-                    resp.Success = true;
-                }
-
-                Logger.Trace(resp.Content);
+                httpClient.DefaultRequestHeaders.Authorization = req.AuthHeader;
             }
+            StringContent httpContent = new StringContent(req.Json, Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            using HttpResponseMessage response = await httpClient.PostAsync(req.Url, httpContent);
+            resp.Content = await response.Content.ReadAsStringAsync();
+            resp.HttpStatusCode = response.StatusCode;
+            if (!response.IsSuccessStatusCode)
+            {
+                resp.Success = false;
+            }
+            else
+            {
+                resp.Success = true;
+            }
+
+            Logger.Trace(resp.Content);
         }
         catch (Exception ex)
         {
