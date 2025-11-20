@@ -7,31 +7,28 @@ namespace CFG2.Utils.HttpLib;
 public class HttpLib
 {
     private static readonly HttpClient httpClient = new HttpClient();
-    private static Dictionary<string, HttpResponse> reqResults = new Dictionary<string, HttpResponse>();
 
-    public static HttpResponse Get(HttpRequest req)
+    public static async Task<HttpResponse> Get(HttpRequest req)
     {
-        DoGet(req);
-        HttpResponse httpResponse = reqResults[req.ID];
-        reqResults.Remove(req.ID);
-        return httpResponse;
+        return await DoGet(req);
     }
 
-    private static async Task DoGet(HttpRequest req)
+    private static async Task<HttpResponse> DoGet(HttpRequest req)
     {
         HttpResponse resp = new HttpResponse();
         try
         {
-            if (req.AcceptContentType != null)
-            {
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(req.AcceptContentType));
-            }
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, req.Url);
             if (req.AuthHeader != null)
             {
-                httpClient.DefaultRequestHeaders.Authorization = req.AuthHeader;
+                requestMessage.Headers.Authorization = req.AuthHeader;
+            }
+            if (!string.IsNullOrEmpty(req.AcceptContentType))
+            {
+                requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(req.AcceptContentType));
             }
 
-            using HttpResponseMessage response = await httpClient.GetAsync(req.Url);
+            using HttpResponseMessage response = await httpClient.SendAsync(requestMessage);
             resp.Content = await response.Content.ReadAsStringAsync();
             Logger.Trace(resp.Content);
             resp.HttpStatusCode = response.StatusCode;
@@ -52,18 +49,15 @@ public class HttpLib
             resp.DebugInfo = e.Message + "\n" + e.ToString();
         }
 
-        reqResults[req.ID] = resp;
+        return resp;
     }
 
-    public static HttpResponse PostForm(HttpRequest req)
+    public static async Task<HttpResponse> PostForm(HttpRequest req)
     {
-        DoFormPost(req);
-        HttpResponse httpResponse = reqResults[req.ID];
-        reqResults.Remove(req.ID);
-        return httpResponse;
+        return await DoFormPost(req);
     }
 
-    private static async Task DoFormPost(HttpRequest req)
+    private static async Task<HttpResponse> DoFormPost(HttpRequest req)
     {
         HttpResponse resp = new HttpResponse();
         try
@@ -92,18 +86,15 @@ public class HttpLib
             resp.DebugInfo = e.Message + "\n" + e.ToString();
         }
 
-        reqResults[req.ID] = resp;
+        return resp;
     }
 
-    public static HttpResponse PostText(HttpRequest req)
+    public static async Task<HttpResponse> PostText(HttpRequest req)
     {
-        DoTextPost(req);
-        HttpResponse httpResponse = reqResults[req.ID];
-        reqResults.Remove(req.ID);
-        return httpResponse;
+        return await DoTextPost(req);
     }
 
-    private static async Task DoTextPost(HttpRequest req)
+    private static async Task<HttpResponse> DoTextPost(HttpRequest req)
     {
         HttpResponse resp = new HttpResponse();
         try
@@ -130,40 +121,32 @@ public class HttpLib
             resp.DebugInfo = e.Message + "\n" + e.ToString();
         }
 
-        reqResults[req.ID] = resp;
+        return resp;
     }
 
-    public static HttpResponse PostJson(HttpRequest req)
+    public static async Task<HttpResponse> PostJson(HttpRequest req)
     {
-        DoJsonPost(req);
-        HttpResponse httpResponse = reqResults[req.ID];
-        reqResults.Remove(req.ID);
-        return httpResponse;
+        return await DoJsonPost(req);
     }
 
-    private static async Task DoJsonPost(HttpRequest req)
+    private static async Task<HttpResponse> DoJsonPost(HttpRequest req)
     {
         HttpResponse resp = new HttpResponse();
         try
         {
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, req.Url);
             if (req.AuthHeader != null)
             {
-                httpClient.DefaultRequestHeaders.Authorization = req.AuthHeader;
+                requestMessage.Headers.Authorization = req.AuthHeader;
             }
-            StringContent httpContent = new StringContent(req.Json, Encoding.UTF8, "application/json");
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            using HttpResponseMessage response = await httpClient.PostAsync(req.Url, httpContent);
+            requestMessage.Content = new StringContent(req.Json ?? "", Encoding.UTF8, "application/json");
+            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            using HttpResponseMessage response = await httpClient.SendAsync(requestMessage);
             resp.Content = await response.Content.ReadAsStringAsync();
             resp.HttpStatusCode = response.StatusCode;
-            if (!response.IsSuccessStatusCode)
-            {
-                resp.Success = false;
-            }
-            else
-            {
-                resp.Success = true;
-            }
+            resp.Success = response.IsSuccessStatusCode;
 
             Logger.Trace(resp.Content);
         }
@@ -174,6 +157,6 @@ public class HttpLib
             Logger.Trace("Error: "+resp.DebugInfo);
         }
 
-        reqResults[req.ID] = resp;
+        return resp;
     }
 }

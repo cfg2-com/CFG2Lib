@@ -242,7 +242,8 @@ public class TestApp
 
     private static void TestHttp()
     {
-        HttpRequest req = new("https://google.com");
-        _app.Trace(HttpLib.Get(req).Content);
+        HttpRequest req = new HttpRequest("https://google.com");
+        HttpResponse resp = HttpLib.Get(req).Result;
+        _app.Trace(resp.Content);
     }
 }

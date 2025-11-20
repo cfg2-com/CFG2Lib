@@ -37,8 +37,8 @@ public class HttpRequest
     public string Json { get; set; }
     public string ID { get { return _id; } }
 
-    public HttpResponse Get()
+    public async Task<HttpResponse> Get()
     {
-        return HttpLib.Get(this);
+        return await HttpLib.Get(this);
     }
 }
