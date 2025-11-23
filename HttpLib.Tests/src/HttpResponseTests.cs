@@ -1,4 +1,6 @@
 using System.Net;
+using Xunit;
+using CFG2.Utils.HttpLib;
 
 namespace CFG2.Utils.HttpLib.Tests
 {

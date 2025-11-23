@@ -39,6 +39,6 @@ public class HttpRequest
 
     public HttpResponse Get()
     {
-        return HttpLib.Get(this);
+        return HttpUtils.Get(this);
     }
 }
