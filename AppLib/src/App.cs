@@ -68,7 +68,7 @@ public class App
         }
         else
         {
-            _configRootDir = Path.Combine(SysLib.GetSpecialFolder(SpecialFolder.AppData), _baseDir);
+            _configRootDir = Path.Combine(SysUtils.GetSpecialFolder(SpecialFolder.AppData), _baseDir);
         }
         Logger.Trace("ConfigRootDir: " + _configRootDir);
         if (!Directory.Exists(_configRootDir))

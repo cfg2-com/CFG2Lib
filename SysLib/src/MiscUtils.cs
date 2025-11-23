@@ -1,14 +1,40 @@
 namespace CFG2.Utils.SysLib;
 
-public class MiscLib
+public class MiscUtils
 {
-    public static string GenerateCorrelationId(string prefix = "")
+    private static readonly object _lock = new();
+    private static string _lastTimestamp = "";
+    private static int _counter;
+
+    /// <summary>
+    /// Generate a unique Correlation ID based on current timestamp and specified prefix (default to CID). 
+    /// This is thread-safe and will increment a counter if multiple IDs are generated within the same minute. 
+    /// Not inteded for all scenarious and complete uniqueness, but should be sufficient for most logging/tracking purposes.
+    /// </summary>
+    /// <param name="prefix">Prefix for returned value. Will be capitalized.</param>
+    /// <returns>A value in the format: PREFIX-0000</returns>
+    public static string GenerateCorrelationId(string prefix = "CID")
     {
-        if (string.IsNullOrEmpty(prefix))
+        lock (_lock)
         {
-            prefix = "CID";
+            if (string.IsNullOrEmpty(prefix))
+            {
+                prefix = "CID";
+            }
+            string currentTimestamp = DateTime.Now.ToString("yyMMddHHmm");
+            if (currentTimestamp == _lastTimestamp)
+            {
+                _counter++;
+            }
+            else
+            {
+                _lastTimestamp = currentTimestamp;
+                _counter = 0;
+            }
+            return _counter > 0
+                ? $"{prefix.ToUpper()}-{currentTimestamp}{_counter}"
+                : $"{prefix.ToUpper()}-{currentTimestamp}";
         }
-        return prefix.ToUpper() + "-" + DateTime.Now.ToString("yyyyMMddHHmmss");
     }
 
     /// <summary>
