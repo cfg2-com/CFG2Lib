@@ -56,17 +56,17 @@ public class TestApp
 
     private static void TestFileDiff()
     {
-        string file1 = SysLib.GetTempFile();
-        string file2 = SysLib.GetTempFile();
+        string file1 = SysUtils.GetTempFile();
+        string file2 = SysUtils.GetTempFile();
 
         string file1Content = "This is a test file.\nWith multiple lines.\nLine 3.\nLine 4.";
         File.WriteAllText(file1, file1Content);
         File.WriteAllText(file2, "This is a test file.\nWith multiple lines.\nLine 3 modified.\nLine 4.");
 
-        bool differ = SysLib.IsFileDifferent(file1, file2);
+        bool differ = SysUtils.IsFileDifferent(file1, file2);
         _app.Trace("Files differ (should return true): " + differ);
 
-        differ = SysLib.IsFileDifferentThanString(file1, file1Content);
+        differ = SysUtils.IsFileDifferentThanString(file1, file1Content);
         _app.Trace("File differs from string (should return false): " + differ);
 
         File.Delete(file1);

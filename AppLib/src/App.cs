@@ -95,8 +95,8 @@ public class App
     public string SyncDir => GetSyncDir();
     public string InboxDir => GetInboxDir();
     public string TempDir => GetTempDir();
-    public string TempLocalDir => SysLib.GetSpecialFolder(SpecialFolder.Temp);
-    public string TempFile => SysLib.GetTempFile();
+    public string TempLocalDir => SysUtils.GetSpecialFolder(SpecialFolder.Temp);
+    public string TempFile => SysUtils.GetTempFile();
     public int RetentionDays => _retentionDays;
 
     private string GetAppName()
@@ -169,9 +169,9 @@ public class App
     private string GetSyncDir()
     {
         string syncHome;
-        if (!SysLib.EnvVarExists("SYNC_DRIVE_HOME"))
+        if (!SysUtils.EnvVarExists("SYNC_DRIVE_HOME"))
         {
-            syncHome = Path.Combine(SysLib.GetSpecialFolder(SpecialFolder.AppData), _baseDir);
+            syncHome = Path.Combine(SysUtils.GetSpecialFolder(SpecialFolder.AppData), _baseDir);
             if (!Directory.Exists(syncHome))
             {
                 Logger.Trace("Creating: " + syncHome);
@@ -182,7 +182,7 @@ public class App
         else
         {
             //Logger.Trace("Using SYNC_DRIVE_HOME environment variable");
-            syncHome = SysLib.GetEnvVar("SYNC_DRIVE_HOME");
+            syncHome = SysUtils.GetEnvVar("SYNC_DRIVE_HOME");
         }
 
 
