@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecLib", "SecLib\SecLib.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpLib.Tests", "HttpLib.Tests\HttpLib.Tests.csproj", "{9AEC1A19-3D5C-4E27-974B-59916C78FE23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SysLib.Tests", "SysLib.Tests\SysLib.Tests.csproj", "{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,6 +130,18 @@ Global
 		{9AEC1A19-3D5C-4E27-974B-59916C78FE23}.Release|x64.Build.0 = Release|Any CPU
 		{9AEC1A19-3D5C-4E27-974B-59916C78FE23}.Release|x86.ActiveCfg = Release|Any CPU
 		{9AEC1A19-3D5C-4E27-974B-59916C78FE23}.Release|x86.Build.0 = Release|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Debug|x64.Build.0 = Debug|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Debug|x86.Build.0 = Debug|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Release|x64.ActiveCfg = Release|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Release|x64.Build.0 = Release|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Release|x86.ActiveCfg = Release|Any CPU
+		{0CF7E5E1-BF8C-4032-9988-6BF66F2F7192}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

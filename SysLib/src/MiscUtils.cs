@@ -90,4 +90,21 @@ public class MiscUtils
 
         return "";
     }
+
+    private string StripCorrelationId(string subject, string correlationId, bool arrowCheck = true, bool parenCheck = true)
+    {
+        if (!string.IsNullOrEmpty(correlationId))
+        {
+            if (parenCheck)
+            {
+                subject = subject.Replace(" (" + correlationId + ")", "").Trim();
+            }
+            if (arrowCheck)
+            {
+                subject = subject.Replace(" -> " + correlationId, "").Trim();
+            }
+        }
+
+        return subject;
+    }
 }
