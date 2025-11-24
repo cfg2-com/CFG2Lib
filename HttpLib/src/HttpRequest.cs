@@ -21,7 +21,7 @@ public class HttpRequest
                 UriBuilder uriBuilder = new UriBuilder(_url);
                 string query = string.Join("&", UrlParams.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
                 uriBuilder.Query = query;
-                return uriBuilder.ToString();
+                return uriBuilder.Uri.AbsoluteUri;
             }
             else
             {
