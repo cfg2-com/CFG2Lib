@@ -5,8 +5,14 @@ using System.Threading.Tasks;
 
 namespace CFG2.Utils.SysLib.Tests
 {
-    public class MiscUtilsTests
+    public class MiscUtilsTests : IDisposable
     {
+        public void Dispose()
+        {
+            // Reset the static state after each test to ensure test isolation
+            MiscUtils.Reinitialize();
+        }
+
         [Fact]
         public void GenerateCorrelationId_DefaultPrefix_ReturnsCorrectFormat()
         {
@@ -15,7 +21,7 @@ namespace CFG2.Utils.SysLib.Tests
 
             // Assert
             Assert.StartsWith("CID-", correlationId);
-            Assert.Matches(@"^CID-\d{10}$", correlationId);
+            Assert.Matches(@"^CID-\d{10,}$", correlationId); // Have to match 10 or more because of possible counter suffix
         }
 
         [Fact]
@@ -26,7 +32,7 @@ namespace CFG2.Utils.SysLib.Tests
 
             // Assert
             Assert.StartsWith("TEST-", correlationId);
-            Assert.Matches(@"^TEST-\d{10}$", correlationId);
+            Assert.Matches(@"^TEST-\d{10,}$", correlationId);
         }
 
         [Fact]
@@ -44,13 +50,15 @@ namespace CFG2.Utils.SysLib.Tests
         [Fact]
         public void GenerateCorrelationId_MultipleCallsInSameMinute_IncrementsCounter()
         {
+            // Arrange
+            var timestamp = DateTime.Now.ToString("yyMMddHHmm");
+
             // Act
             var id1 = MiscUtils.GenerateCorrelationId("SEQ");
             var id2 = MiscUtils.GenerateCorrelationId("SEQ");
             var id3 = MiscUtils.GenerateCorrelationId("SEQ");
 
             // Assert
-            var timestamp = DateTime.Now.ToString("yyMMddHHmm");
             Assert.Equal($"SEQ-{timestamp}", id1);
             Assert.Equal($"SEQ-{timestamp}1", id2);
             Assert.Equal($"SEQ-{timestamp}2", id3);

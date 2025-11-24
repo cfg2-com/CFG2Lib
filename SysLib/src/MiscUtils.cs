@@ -7,6 +7,20 @@ public class MiscUtils
     private static int _counter;
 
     /// <summary>
+    /// Resets the internal state of the correlation ID generator. 
+    /// This is primarily intended for use in unit tests to ensure a consistent state between test runs, 
+    /// but could also be useful when running in an app.
+    /// </summary>
+    public static void Reinitialize()
+    {
+        lock (_lock)
+        {
+            _lastTimestamp = "";
+            _counter = 0;
+        }
+    }
+
+    /// <summary>
     /// Generate a unique Correlation ID based on current timestamp and specified prefix (default to CID). 
     /// This is thread-safe and will increment a counter if multiple IDs are generated within the same minute. 
     /// Not inteded for all scenarious and complete uniqueness, but should be sufficient for most logging/tracking purposes.
