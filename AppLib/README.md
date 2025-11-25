@@ -11,6 +11,13 @@ Some ways AppLib attempts to be easy to use include:
 - Providing a consistent filesystem structure for any of your applications.
 - Providing a way to get application configuration properties.
 - Providing utility functionality like key value pair (KVP) management, and deduplication control.
+- Automatically includes:
+  - [SysLib](https://www.nuget.org/packages/CFG2.SysLib/) for general system functions and domain objects
+  - [LogLib](https://www.nuget.org/packages/CFG2.LogLib/) for logging
+  - [SecLib](https://www.nuget.org/packages/CFG2.SecLib/) for security functions
+  - [SQLiteLib](https://www.nuget.org/packages/CFG2.SQLiteLib/) for working with SQLite
+- Consider using other CFG2Lib libraries like:
+  - [HttpLib](https://www.nuget.org/packages/CFG2.HttpLib/)
 
 ## Usage Examples
 
