@@ -50,6 +50,9 @@ public class TestApp
 
 ## Release Notes
 
+### 1.0.24
+- Pulling in updates on SysLib 1.0.12
+
 ### 1.0.23
 - Added ability to remove AppConfig properties
 - Added ability to remove KVP keys
