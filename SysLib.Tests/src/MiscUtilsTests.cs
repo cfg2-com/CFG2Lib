@@ -120,5 +120,35 @@ namespace CFG2.Utils.SysLib.Tests
             Assert.Equal("", result1);
             Assert.Equal("", result2);
         }
+
+        [Theory]
+        [InlineData("Subject -> ID-123", "ID-123", "Subject")]
+        [InlineData("Subject (ID-123)", "ID-123", "Subject")]
+        [InlineData("Subject -> ID-123", "WRONG-ID", "Subject -> ID-123")]
+        [InlineData("Subject (ID-123)", "WRONG-ID", "Subject (ID-123)")]
+        [InlineData("Subject without ID", "ID-123", "Subject without ID")]
+        [InlineData("Subject", null, "Subject")]
+        [InlineData("Subject", "", "Subject")]
+        [InlineData("Subject (ID-123) -> ID-123", "ID-123", "Subject")]
+        public void StripCorrelationId_VariousScenarios_StripsCorrectly(string subject, string correlationId, string expectedSubject)
+        {
+            // Act
+            var result = MiscUtils.StripCorrelationId(subject, correlationId);
+
+            // Assert
+            Assert.Equal(expectedSubject, result);
+        }
+
+        [Fact]
+        public void StripCorrelationId_CheckFlags_DisablesStripping()
+        {
+            // Arrange
+            var subjectWithArrow = "Subject -> ARROW-ID";
+            var subjectWithParen = "Subject (PAREN-ID)";
+
+            // Assert
+            Assert.Equal(subjectWithArrow, MiscUtils.StripCorrelationId(subjectWithArrow, "ARROW-ID", arrowCheck: false));
+            Assert.Equal(subjectWithParen, MiscUtils.StripCorrelationId(subjectWithParen, "PAREN-ID", parenCheck: false));
+        }
     }
 }

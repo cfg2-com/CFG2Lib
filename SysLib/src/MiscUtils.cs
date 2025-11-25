@@ -105,7 +105,15 @@ public class MiscUtils
         return "";
     }
 
-    private string StripCorrelationId(string subject, string correlationId, bool arrowCheck = true, bool parenCheck = true)
+    /// <summary>
+    /// Strips the specified Correlation ID from the subject line if present.
+    /// </summary>
+    /// <param name="subject"></param>
+    /// <param name="correlationId"></param>
+    /// <param name="arrowCheck">Enable/disable arrow pattern " -> CORRID" check in subject.</param>
+    /// <param name="parenCheck">Enable/disable parenthesis pattern " (COR-ID)" check in subject.</param>
+    /// <returns>Subject line with Correlation ID removed if it was present.</returns>
+    public static string StripCorrelationId(string subject, string correlationId, bool arrowCheck = true, bool parenCheck = true)
     {
         if (!string.IsNullOrEmpty(correlationId))
         {
@@ -113,6 +121,7 @@ public class MiscUtils
             {
                 subject = subject.Replace(" (" + correlationId + ")", "").Trim();
             }
+
             if (arrowCheck)
             {
                 subject = subject.Replace(" -> " + correlationId, "").Trim();
