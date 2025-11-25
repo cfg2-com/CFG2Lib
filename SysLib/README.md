@@ -6,6 +6,10 @@ Nothing in here is rocket science, but if it saves you from writing any boiler p
 
 ## Release Notes
 
+### 1.0.12
+- Added EmailAddress domain object
+- Added PhoneNumber domain object
+
 ### 1.0.11
 - Added MiscUtils with correlation id functions
 - Deprecated SysLib in favor of SysUtils
