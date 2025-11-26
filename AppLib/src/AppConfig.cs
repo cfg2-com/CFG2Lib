@@ -38,7 +38,7 @@ public class AppConfig
     /// </summary>
     public void Reload()
     {
-        _app.Log("Loading AppConfig");
+        _app.Trace("Loading AppConfig");
         _kvp = new KVPmemory(_app);
 
         _kvpMDP = new KVPmdp(_app, _app.Name, _mdpTable, "KEY_ID", "APP_C");
